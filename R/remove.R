@@ -12,9 +12,10 @@
 #'  currently used.
 #' @param role not defined for this function
 #' @param aggregation_function a function that returns a value between 0 and 1 on an applied row
-#' @param filter_function a function that decides the cut pont for outliers
+#' @param probability_dropout a value between 0 and 1 to decide outliers uses ">=" rule
 #' @param col_names name of the columns being operated on, after filtering they will be removed
 #' @param outliers_indexes placeholder for the tidy method
+#' @param aggregation_results a placeholder for the vector of probabilities
 #'
 #' @return An updated version of `recipe` with the new step
 #'  added to the sequence of existing steps (if any), with the name on `name_mutate` and the probabilities calculated. For the
@@ -49,7 +50,7 @@ step_outliers_remove <- function(
   recipe,
   ...,
   aggregation_function = mean,
-  filter_function = function(x) x >= .95,
+  probability_dropout = .95,
   outliers_indexes = NULL,
   aggregation_results = NULL,
   col_names = NULL,
@@ -71,7 +72,7 @@ step_outliers_remove <- function(
       trained = trained,
       role = role,
       aggregation_function = mean,
-      filter_function = filter_function,
+      probability_dropout = probability_dropout,
       outliers_indexes = outliers_indexes,
       aggregation_results = aggregation_results,
       col_names = col_names,
@@ -88,7 +89,7 @@ step_outliers_remove_new <-
            role,
            trained,
            aggregation_function = aggregation_function,
-           filter_function = filter_function,
+           probability_dropout = probability_dropout,
            outliers_indexes = outliers_indexes,
            aggregation_results = aggregation_results,
            col_names = col_names,
@@ -100,7 +101,7 @@ step_outliers_remove_new <-
       role = role,
       trained = trained,
       aggregation_function = aggregation_function,
-      filter_function = filter_function,
+      probability_dropout = probability_dropout,
       outliers_indexes = outliers_indexes,
       aggregation_results = aggregation_results,
       col_names = col_names,
@@ -110,12 +111,12 @@ step_outliers_remove_new <-
   }
 
 
-get_outliers_combination <- function(x,aggregation_function,filter_function) {
+get_outliers_combination <- function(x,aggregation_function,probability_dropout) {
 
   aggregation_results <- apply(x, 1, aggregation_function)
 
 
-  outliers_indexes <- which(filter_function(aggregation_results))
+  outliers_indexes <- which(aggregation_results >= probability_dropout)
 
   list(outliers_indexes = outliers_indexes,aggregation_results = aggregation_results)
 }
@@ -130,7 +131,7 @@ prep.step_outliers_remove <- function(x, training, info = NULL, ...) {
 
   outliers_combination <-  get_outliers_combination(training[, col_names],
                                                     aggregation_function = x$aggregation_function,
-                                                    filter_function = x$filter_function)
+                                                    probability_dropout = x$probability_dropout)
 
   outliers_indexes <- outliers_combination$outliers_indexes
 
@@ -144,7 +145,7 @@ prep.step_outliers_remove <- function(x, training, info = NULL, ...) {
     trained = TRUE,
     role = x$role,
     aggregation_function = x$aggregation_function,
-    filter_function = x$filter_function,
+    probability_dropout = x$probability_dropout,
     outliers_indexes = outliers_indexes,
     aggregation_results = aggregation_results,
     col_names = col_names,
@@ -200,6 +201,8 @@ format_remove <- function(step_outlier) {
   )
 }
 
+#' @rdname step_outliers_remove
+#' @param x A `step_outliers_remove` object.
 #' @export
 tidy.step_outliers_remove <- function(x, ...) {
   if (is_trained(x)) {
@@ -213,4 +216,15 @@ tidy.step_outliers_remove <- function(x, ...) {
         aggregation_results = 0
       )
   }
+}
+
+#' @export
+tunable.step_outliers_remove <- function (x, ...) {
+  tibble::tibble(
+    name = c("probability_dropout"),
+    call_info = list(list(pkg = "dials", fun = "dropout")),
+    source = "recipe",
+    component = "step_outliers_remove",
+    component_id = x$id
+  )
 }
