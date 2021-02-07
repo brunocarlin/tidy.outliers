@@ -2,13 +2,14 @@
 % Please edit documentation in R/remove.R
 \name{step_outliers_remove}
 \alias{step_outliers_remove}
+\alias{tidy.step_outliers_remove}
 \title{Calculate the aggregation of a set of outlier columns and filters the resulting tibble}
 \usage{
 step_outliers_remove(
   recipe,
   ...,
   aggregation_function = mean,
-  filter_function = function(x) x >= 0.95,
+  probability_dropout = 0.95,
   outliers_indexes = NULL,
   aggregation_results = NULL,
   col_names = NULL,
@@ -17,6 +18,8 @@ step_outliers_remove(
   skip = TRUE,
   id = rand_id("outliers_remove")
 )
+
+\method{tidy}{step_outliers_remove}(x, ...)
 }
 \arguments{
 \item{recipe}{A recipe object. The step will be added to the
@@ -29,9 +32,11 @@ currently used.}
 
 \item{aggregation_function}{a function that returns a value between 0 and 1 on an applied row}
 
-\item{filter_function}{a function that decides the cut pont for outliers}
+\item{probability_dropout}{a value between 0 and 1 to decide outliers uses ">=" rule}
 
 \item{outliers_indexes}{placeholder for the tidy method}
+
+\item{aggregation_results}{a placeholder for the vector of probabilities}
 
 \item{col_names}{name of the columns being operated on, after filtering they will be removed}
 
@@ -48,6 +53,8 @@ Care should be taken when using \code{skip = TRUE} as it may affect
 the computations for subsequent operations}
 
 \item{id}{A character string that is unique to this step to identify it.}
+
+\item{x}{A \code{step_outliers_remove} object.}
 }
 \value{
 An updated version of \code{recipe} with the new step

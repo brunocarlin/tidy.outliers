@@ -87,16 +87,16 @@ tidy(rec_obj,number = 1)
 #> # A tibble: 32 x 3
 #>    index outlier_probability id                 
 #>    <int>               <dbl> <chr>              
-#>  1     1               0.411 outliers_maha_Vu8wu
-#>  2     2               0.374 outliers_maha_Vu8wu
-#>  3     3               0.222 outliers_maha_Vu8wu
-#>  4     4               0.192 outliers_maha_Vu8wu
-#>  5     5               0.124 outliers_maha_Vu8wu
-#>  6     6               0.350 outliers_maha_Vu8wu
-#>  7     7               0.481 outliers_maha_Vu8wu
-#>  8     8               0.493 outliers_maha_Vu8wu
-#>  9     9               0.985 outliers_maha_Vu8wu
-#> 10    10               0.737 outliers_maha_Vu8wu
+#>  1     1               0.411 outliers_maha_mYwUv
+#>  2     2               0.374 outliers_maha_mYwUv
+#>  3     3               0.222 outliers_maha_mYwUv
+#>  4     4               0.192 outliers_maha_mYwUv
+#>  5     5               0.124 outliers_maha_mYwUv
+#>  6     6               0.350 outliers_maha_mYwUv
+#>  7     7               0.481 outliers_maha_mYwUv
+#>  8     8               0.493 outliers_maha_mYwUv
+#>  9     9               0.985 outliers_maha_mYwUv
+#> 10    10               0.737 outliers_maha_mYwUv
 #> # ... with 22 more rows
 ```
 
@@ -170,3 +170,141 @@ tidy(rec_obj2,number = 2) %>%
 #> 10    30 FALSE                  0.654
 #> # ... with 22 more rows
 ```
+
+## Integration with tidymodels
+
+### Load tidymodels
+
+``` r
+library(tidymodels)
+```
+
+### Get data
+
+``` r
+data(ames)
+
+
+data_split <- ames %>%
+  mutate(Sale_Price = log10(Sale_Price)) %>%
+  initial_split(strata = Sale_Price)
+ames_train <- training(data_split)
+ames_test  <- testing(data_split)
+```
+
+### create the recipe
+
+``` r
+ames_rec <- 
+  recipe(Sale_Price ~ Gr_Liv_Area + Longitude + Latitude, data = ames_train) %>% 
+  step_log(Gr_Liv_Area, base = 10) %>% 
+  step_ns(Longitude, deg_free = tune("long df")) %>% 
+  step_ns(Latitude,  deg_free = tune("lat df")) %>% 
+  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  step_outliers_remove(contains(r"(.outliers)"),probability_dropout = tune("dropout"))
+```
+
+### See the parameters
+
+``` r
+parameters(ames_rec)
+#> Collection of 3 parameters for tuning
+#> 
+#>  identifier                type    object
+#>     long df            deg_free nparam[+]
+#>      lat df            deg_free nparam[+]
+#>     dropout probability_dropout nparam[+]
+```
+
+### There is already a function for dropouts implemented by dials
+
+``` r
+ames_param <- 
+  ames_rec %>% 
+  parameters() %>% 
+  update(
+    `long df` = spline_degree(), 
+    `lat df` = spline_degree(),
+    dropout = dropout(range = c(0.75, 1))
+  )
+```
+
+### Grid Search picks random points
+
+``` r
+spline_grid <- grid_max_entropy(ames_param, size = 10)
+spline_grid
+#> # A tibble: 10 x 3
+#>    `long df` `lat df` dropout
+#>        <int>    <int>   <dbl>
+#>  1         6        1   0.779
+#>  2         3       10   0.836
+#>  3         4        1   0.929
+#>  4         9        4   0.769
+#>  5         6       10   0.753
+#>  6         5        9   0.991
+#>  7         9        3   0.980
+#>  8         9        9   0.919
+#>  9        10        8   0.811
+#> 10         2        5   0.759
+```
+
+### create a simple model
+
+``` r
+lin_mod <-
+  linear_reg() %>%
+  set_engine("lm")
+```
+
+### create a simple workflow
+
+``` r
+wf_tune <- workflow() %>%
+  add_recipe(ames_rec) %>% 
+  add_model(lin_mod)
+```
+
+### create training folds
+
+``` r
+set.seed(2453)
+cv_splits <- vfold_cv(ames_train, v = 10, strata = Sale_Price)
+```
+
+### Tune the grid
+
+``` r
+ames_res <- tune_grid(wf_tune, resamples = cv_splits, grid = spline_grid)
+```
+
+``` r
+estimates <- collect_metrics(ames_res)
+
+rmse_vals <- 
+  estimates %>% 
+  dplyr::filter(.metric == "rmse") %>% 
+  arrange(mean)
+rmse_vals
+#> # A tibble: 10 x 9
+#>    `long df` `lat df` dropout .metric .estimator   mean     n std_err .config   
+#>        <int>    <int>   <dbl> <chr>   <chr>       <dbl> <int>   <dbl> <chr>     
+#>  1         9        9   0.919 rmse    standard   0.0961    10 0.00239 Preproces~
+#>  2         5        9   0.991 rmse    standard   0.0963    10 0.00234 Preproces~
+#>  3        10        8   0.811 rmse    standard   0.0970    10 0.00246 Preproces~
+#>  4         3       10   0.836 rmse    standard   0.0974    10 0.00247 Preproces~
+#>  5         6       10   0.753 rmse    standard   0.0976    10 0.00231 Preproces~
+#>  6         9        3   0.980 rmse    standard   0.0989    10 0.00239 Preproces~
+#>  7         9        4   0.769 rmse    standard   0.0999    10 0.00231 Preproces~
+#>  8         4        1   0.929 rmse    standard   0.109     10 0.00248 Preproces~
+#>  9         6        1   0.779 rmse    standard   0.111     10 0.00250 Preproces~
+#> 10         2        5   0.759 rmse    standard   0.174     10 0.00651 Preproces~
+```
+
+## Plot it
+
+``` r
+autoplot(ames_res,metric = "rmse")
+```
+
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
