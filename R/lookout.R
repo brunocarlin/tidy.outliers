@@ -1,7 +1,7 @@
-#' Calculate the [Mahalanobis][maha] outlier "probability"
+#' Calculate the [lookout package][lookout] outlier "probability"
 #'
-#' `step_outliers_maha` creates a *specification* of a recipe
-#'  step that will calculate the probability of the row of selected columns being an outliers using [maha] from `OutlierDetection`.
+#' `step_outliers_lookout` creates a *specification* of a recipe
+#'  step that will calculate the probability of the row of selected columns being an outliers using [lookout] from `OutlierDetection`.
 #'
 #' @keywords datagen
 #' @concept preprocessing
@@ -12,9 +12,9 @@
 #'  currently used.
 #' @param role not defined for this function
 #' @param outlier_probability a placeholder for the exit of this function don't change
-#' @param name_mutate the name of the generated column with maha probabilities
-#' @importFrom OutlierDetection maha
-#' @param options a list with cutoff point which is ignored and the rnames argument of the [maha] function
+#' @param name_mutate the name of the generated column with lookout probabilities
+#' @importFrom lookout lookout
+#' @param options a list with alpha which is ignored, unitize which decides normalization, bw and gdp [lookout] function
 #' @return An updated version of `recipe` with the new step
 #'  added to the sequence of existing steps (if any), with the name on `name_mutate` and the probabilities calculated. For the
 #'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_probability` (the probabilites).
@@ -36,23 +36,23 @@
 #' library(OutlierDetection)
 #'  rec_obj <-
 #'  recipe(mpg ~ ., data = mtcars) %>%
-#'  step_outliers_maha(all_numeric(),-all_outcomes()) %>%
+#'  step_outliers_lookout(all_numeric(),-all_outcomes()) %>%
 #'  prep(mtcars)
 #'
 #'juice(rec_obj)
 #'
 #'tidy(rec_obj,number = 1)
 #'
-step_outliers_maha <- function(
+step_outliers_lookout <- function(
   recipe,
   ...,
   role = NA,
   trained = FALSE,
   outlier_probability = NULL,
-  name_mutate = ".outliers_maha",
-  options = list(cutoff = 0,rnames = FALSE),
+  name_mutate = ".outliers_lookout",
+  options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
   skip = TRUE,
-  id = rand_id("outliers_maha")
+  id = rand_id("outliers_lookout")
 ) {
 
   ## The variable selectors are not immediately evaluated by using
@@ -60,11 +60,11 @@ step_outliers_maha <- function(
   ##  the values and also checks to make sure that they are not empty.
   terms <- ellipse_check(...)
 
-  recipes_pkg_check(required_pkgs.step_outliers_maha())
+  recipes_pkg_check(required_pkgs.step_outliers_lookout())
 
   add_step(
     recipe,
-    step_outliers_maha_new(
+    step_outliers_lookout_new(
       terms = terms,
       trained = trained,
       role = role,
@@ -79,7 +79,7 @@ step_outliers_maha <- function(
 
 
 
-step_outliers_maha_new <-
+step_outliers_lookout_new <-
   function(terms,
            role,
            trained,
@@ -89,7 +89,7 @@ step_outliers_maha_new <-
            skip,
            id) {
     step(
-      subclass = "outliers_maha",
+      subclass = "outliers_lookout",
       terms = terms,
       role = role,
       trained = trained,
@@ -102,18 +102,20 @@ step_outliers_maha_new <-
   }
 
 
-get_train_probability_maha <- function(x, args = NULL) {
+get_train_probability_lookout <- function(x, args = NULL) {
 
-  args$cutoff = 0
+  res <- rlang::exec('lookout',X = x,!!!args)
 
-  res <- rlang::exec('maha',x = x,!!!args)
+  invert_prob <- function(vector_probs) {
+    (vector_probs - 1) * -1
+  }
 
-  res$`Outlier Probability`
+  invert_prob(res$`outlier_probability`)
 }
 
 
 #' @export
-prep.step_outliers_maha <- function(x, training, info = NULL, ...) {
+prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
   col_names <- terms_select(terms = x$terms, info = info)
   ## You can add error trapping for non-numeric data here and so on.
 
@@ -132,13 +134,13 @@ prep.step_outliers_maha <- function(x, training, info = NULL, ...) {
   # }
 
 
-  outlier_probability <- training[, col_names] %>% get_train_probability_maha(args = x$options)
+  outlier_probability <- training[, col_names] %>% get_train_probability_lookout(args = x$options)
 
 
   ## Use the constructor function to return the updated object.
   ## Note that `trained` is now set to TRUE
 
-  step_outliers_maha_new(
+  step_outliers_lookout_new(
     terms = x$terms,
     trained = TRUE,
     role = x$role,
@@ -152,7 +154,7 @@ prep.step_outliers_maha <- function(x, training, info = NULL, ...) {
 
 
 #' @export
-bake.step_outliers_maha <- function(object, new_data, ...) {
+bake.step_outliers_lookout <- function(object, new_data, ...) {
 
   new_data[[object$name_mutate]] <- object$outlier_probability
 
@@ -170,10 +172,10 @@ format_prob <- function(step_outlier) {
   )
 }
 
-#' @rdname step_outliers_maha
-#' @param x A `step_outliers_maha` object.
+#' @rdname step_outliers_lookout
+#' @param x A `step_outliers_lookout` object.
 #' @export
-tidy.step_outliers_maha <- function(x, ...) {
+tidy.step_outliers_lookout <- function(x, ...) {
   if (is_trained(x)) {
     res <-format_prob(x)
   }
@@ -191,6 +193,7 @@ tidy.step_outliers_maha <- function(x, ...) {
 }
 
 
-required_pkgs.step_outliers_maha <- function(x, ...) {
-  c("OutlierDetection")
+required_pkgs.step_outliers_lookout <- function(x, ...) {
+  c("lookout")
 }
+

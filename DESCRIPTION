@@ -24,3 +24,6 @@ Imports:
     OutlierDetection,
     tibble,
     rlang
+Remotes: 
+    sevvandi/lookout
+

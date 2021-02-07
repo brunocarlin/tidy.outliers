@@ -55,8 +55,14 @@ jobs:
           install.packages("pkgdown", type = "binary")
         shell: Rscript {0}
 
-      # - name: Install package
-      #   run: R CMD INSTALL .
+      - name: Configure Git user
+        run: |
+          git config --global user.email "ghau@example.com"
+          git config --global user.name "GitHub Actions User"
+
+
+      - name: Install package
+          Rcmd.exe INSTALL .'
 
       - name: Deploy package
         run: |
