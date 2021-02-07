@@ -55,6 +55,7 @@ library(OutlierDetection)
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) %>%
   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) %>% 
   prep(mtcars)
 ```
 
@@ -62,23 +63,24 @@ rec_obj <-
 
 ``` r
 juice(rec_obj) %>% 
-  select(.outliers_maha)
+  select(contains(r"(.outliers)")) %>% 
+  arrange(.outliers_lookout %>% desc())
 #> Registered S3 method overwritten by 'cli':
 #>   method     from    
 #>   print.boxx spatstat
-#> # A tibble: 32 x 1
-#>    .outliers_maha
-#>             <dbl>
-#>  1          0.411
-#>  2          0.374
-#>  3          0.222
-#>  4          0.192
-#>  5          0.124
-#>  6          0.350
-#>  7          0.481
-#>  8          0.493
-#>  9          0.985
-#> 10          0.737
+#> # A tibble: 32 x 2
+#>    .outliers_maha .outliers_lookout
+#>             <dbl>             <dbl>
+#>  1          0.959            1     
+#>  2          0.967            0.506 
+#>  3          0.951            0.403 
+#>  4          0.654            0.108 
+#>  5          0.864            0.0795
+#>  6          0.741            0.0787
+#>  7          0.411            0     
+#>  8          0.374            0     
+#>  9          0.222            0     
+#> 10          0.192            0     
 #> # ... with 22 more rows
 ```
 
@@ -87,16 +89,34 @@ tidy(rec_obj,number = 1)
 #> # A tibble: 32 x 3
 #>    index outlier_probability id                 
 #>    <int>               <dbl> <chr>              
-#>  1     1               0.411 outliers_maha_mYwUv
-#>  2     2               0.374 outliers_maha_mYwUv
-#>  3     3               0.222 outliers_maha_mYwUv
-#>  4     4               0.192 outliers_maha_mYwUv
-#>  5     5               0.124 outliers_maha_mYwUv
-#>  6     6               0.350 outliers_maha_mYwUv
-#>  7     7               0.481 outliers_maha_mYwUv
-#>  8     8               0.493 outliers_maha_mYwUv
-#>  9     9               0.985 outliers_maha_mYwUv
-#> 10    10               0.737 outliers_maha_mYwUv
+#>  1     1               0.411 outliers_maha_UScb9
+#>  2     2               0.374 outliers_maha_UScb9
+#>  3     3               0.222 outliers_maha_UScb9
+#>  4     4               0.192 outliers_maha_UScb9
+#>  5     5               0.124 outliers_maha_UScb9
+#>  6     6               0.350 outliers_maha_UScb9
+#>  7     7               0.481 outliers_maha_UScb9
+#>  8     8               0.493 outliers_maha_UScb9
+#>  9     9               0.985 outliers_maha_UScb9
+#> 10    10               0.737 outliers_maha_UScb9
+#> # ... with 22 more rows
+```
+
+``` r
+tidy(rec_obj,number = 2)
+#> # A tibble: 32 x 3
+#>    index outlier_probability id                    
+#>    <int>               <dbl> <chr>                 
+#>  1     1                   0 outliers_lookout_jpLf8
+#>  2     2                   0 outliers_lookout_jpLf8
+#>  3     3                   0 outliers_lookout_jpLf8
+#>  4     4                   0 outliers_lookout_jpLf8
+#>  5     5                   0 outliers_lookout_jpLf8
+#>  6     6                   0 outliers_lookout_jpLf8
+#>  7     7                   0 outliers_lookout_jpLf8
+#>  8     8                   0 outliers_lookout_jpLf8
+#>  9     9                   0 outliers_lookout_jpLf8
+#> 10    10                   0 outliers_lookout_jpLf8
 #> # ... with 22 more rows
 ```
 
@@ -108,29 +128,31 @@ tidy(rec_obj,number = 1)
 rec_obj2 <-
   recipe(mpg ~ ., data = mtcars) %>%
   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) %>% 
   step_outliers_remove(contains(r"(.outliers)")) %>% 
   prep(mtcars)
 ```
 
 ### Investigate results
 
-We can see that the mtcars dataset got reduced by our function
+We can see that the mtcars dataset got reduced by our function but way
+less than if we used just one function on this case
 
 ``` r
 juice(rec_obj2) %>% glimpse()
-#> Rows: 28
+#> Rows: 31
 #> Columns: 11
-#> $ cyl  <dbl> 6, 6, 4, 6, 8, 6, 8, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4, 4, 8,...
-#> $ disp <dbl> 160.0, 160.0, 108.0, 258.0, 360.0, 225.0, 360.0, 146.7, 167.6,...
-#> $ hp   <dbl> 110, 110, 93, 110, 175, 105, 245, 62, 123, 123, 180, 180, 180,...
+#> $ cyl  <dbl> 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4, 4,...
+#> $ disp <dbl> 160.0, 160.0, 108.0, 258.0, 360.0, 225.0, 360.0, 146.7, 140.8,...
+#> $ hp   <dbl> 110, 110, 93, 110, 175, 105, 245, 62, 95, 123, 123, 180, 180, ...
 #> $ drat <dbl> 3.90, 3.90, 3.85, 3.08, 3.15, 2.76, 3.21, 3.69, 3.92, 3.92, 3....
-#> $ wt   <dbl> 2.620, 2.875, 2.320, 3.215, 3.440, 3.460, 3.570, 3.190, 3.440,...
-#> $ qsec <dbl> 16.46, 17.02, 18.61, 19.44, 17.02, 20.22, 15.84, 20.00, 18.30,...
-#> $ vs   <dbl> 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,...
-#> $ am   <dbl> 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0,...
-#> $ gear <dbl> 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 3, 3, 3, 3, 3, 3, 4, 4, 4, 3, 3,...
-#> $ carb <dbl> 4, 4, 1, 1, 2, 1, 4, 2, 4, 4, 3, 3, 3, 4, 4, 4, 1, 2, 1, 1, 2,...
-#> $ mpg  <dbl> 21.0, 21.0, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 19.2, 17.8, 16...
+#> $ wt   <dbl> 2.620, 2.875, 2.320, 3.215, 3.440, 3.460, 3.570, 3.190, 3.150,...
+#> $ qsec <dbl> 16.46, 17.02, 18.61, 19.44, 17.02, 20.22, 15.84, 20.00, 22.90,...
+#> $ vs   <dbl> 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,...
+#> $ am   <dbl> 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0,...
+#> $ gear <dbl> 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 4, 4, 4, 3,...
+#> $ carb <dbl> 4, 4, 1, 1, 2, 1, 4, 2, 2, 4, 4, 3, 3, 3, 4, 4, 4, 1, 2, 1, 1,...
+#> $ mpg  <dbl> 21.0, 21.0, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2, 17...
 ```
 
 ``` r
@@ -153,21 +175,21 @@ mtcars %>% glimpse()
 And we can get which were the outliers and their probability
 
 ``` r
-tidy(rec_obj2,number = 2) %>% 
+tidy(rec_obj2,number = 3) %>% 
   arrange(aggregation_results %>% desc())
 #> # A tibble: 32 x 3
 #>    index outliers aggregation_results
 #>    <int> <lgl>                  <dbl>
-#>  1     9 TRUE                   0.985
-#>  2    29 TRUE                   0.967
-#>  3    31 TRUE                   0.959
-#>  4    27 TRUE                   0.951
-#>  5    19 FALSE                  0.864
-#>  6    21 FALSE                  0.745
-#>  7    28 FALSE                  0.741
-#>  8    10 FALSE                  0.737
-#>  9    24 FALSE                  0.693
-#> 10    30 FALSE                  0.654
+#>  1    31 TRUE                   0.980
+#>  2    29 FALSE                  0.736
+#>  3    27 FALSE                  0.677
+#>  4     9 FALSE                  0.493
+#>  5    19 FALSE                  0.472
+#>  6    28 FALSE                  0.410
+#>  7    30 FALSE                  0.381
+#>  8    21 FALSE                  0.372
+#>  9    10 FALSE                  0.369
+#> 10    24 FALSE                  0.347
 #> # ... with 22 more rows
 ```
 
@@ -201,6 +223,7 @@ ames_rec <-
   step_ns(Longitude, deg_free = tune("long df")) %>% 
   step_ns(Latitude,  deg_free = tune("lat df")) %>% 
   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) %>% 
   step_outliers_remove(contains(r"(.outliers)"),probability_dropout = tune("dropout"))
 ```
 
@@ -237,16 +260,16 @@ spline_grid
 #> # A tibble: 10 x 3
 #>    `long df` `lat df` dropout
 #>        <int>    <int>   <dbl>
-#>  1         6        1   0.779
-#>  2         3       10   0.836
-#>  3         4        1   0.929
-#>  4         9        4   0.769
-#>  5         6       10   0.753
-#>  6         5        9   0.991
-#>  7         9        3   0.980
-#>  8         9        9   0.919
-#>  9        10        8   0.811
-#> 10         2        5   0.759
+#>  1         9        3   0.752
+#>  2         4        5   0.958
+#>  3         2        7   0.769
+#>  4        10        1   0.882
+#>  5         7        3   0.996
+#>  6         6        8   0.786
+#>  7         2        1   0.817
+#>  8         5        4   0.840
+#>  9         5        8   0.898
+#> 10         9        6   0.947
 ```
 
 ### create a simple model
@@ -289,16 +312,16 @@ rmse_vals
 #> # A tibble: 10 x 9
 #>    `long df` `lat df` dropout .metric .estimator   mean     n std_err .config   
 #>        <int>    <int>   <dbl> <chr>   <chr>       <dbl> <int>   <dbl> <chr>     
-#>  1         9        9   0.919 rmse    standard   0.0961    10 0.00239 Preproces~
-#>  2         5        9   0.991 rmse    standard   0.0963    10 0.00234 Preproces~
-#>  3        10        8   0.811 rmse    standard   0.0970    10 0.00246 Preproces~
-#>  4         3       10   0.836 rmse    standard   0.0974    10 0.00247 Preproces~
-#>  5         6       10   0.753 rmse    standard   0.0976    10 0.00231 Preproces~
-#>  6         9        3   0.980 rmse    standard   0.0989    10 0.00239 Preproces~
-#>  7         9        4   0.769 rmse    standard   0.0999    10 0.00231 Preproces~
-#>  8         4        1   0.929 rmse    standard   0.109     10 0.00248 Preproces~
-#>  9         6        1   0.779 rmse    standard   0.111     10 0.00250 Preproces~
-#> 10         2        5   0.759 rmse    standard   0.174     10 0.00651 Preproces~
+#>  1         6        8   0.786 rmse    standard   0.0992    10 0.00229 Preproces~
+#>  2         5        8   0.898 rmse    standard   0.0993    10 0.00224 Preproces~
+#>  3         9        6   0.947 rmse    standard   0.100     10 0.00248 Preproces~
+#>  4         9        3   0.752 rmse    standard   0.101     10 0.00240 Preproces~
+#>  5         2        7   0.769 rmse    standard   0.102     10 0.00239 Preproces~
+#>  6         7        3   0.996 rmse    standard   0.102     10 0.00219 Preproces~
+#>  7         5        4   0.840 rmse    standard   0.102     10 0.00228 Preproces~
+#>  8         4        5   0.958 rmse    standard   0.102     10 0.00230 Preproces~
+#>  9        10        1   0.882 rmse    standard   0.109     10 0.00287 Preproces~
+#> 10         2        1   0.817 rmse    standard   0.117     10 0.00288 Preproces~
 ```
 
 ## Plot it
