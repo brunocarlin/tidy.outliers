@@ -34,26 +34,24 @@
 #' library(recipes)
 #' library(tidy.outliers)
 #' library(OutlierDetection)
-#'  rec_obj <-
-#'  recipe(mpg ~ ., data = mtcars) %>%
-#'  step_outliers_lookout(all_numeric(),-all_outcomes()) %>%
-#'  prep(mtcars)
+#' rec_obj <-
+#'   recipe(mpg ~ ., data = mtcars) %>%
+#'   step_outliers_lookout(all_numeric(), -all_outcomes()) %>%
+#'   prep(mtcars)
 #'
-#'juice(rec_obj)
+#' juice(rec_obj)
 #'
-#'tidy(rec_obj,number = 1)
-#'
+#' tidy(rec_obj, number = 1)
 step_outliers_lookout <- function(
-  recipe,
-  ...,
-  role = NA,
-  trained = FALSE,
-  outlier_probability = NULL,
-  name_mutate = ".outliers_lookout",
-  options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
-  skip = TRUE,
-  id = rand_id("outliers_lookout")
-) {
+                                  recipe,
+                                  ...,
+                                  role = NA,
+                                  trained = FALSE,
+                                  outlier_probability = NULL,
+                                  name_mutate = ".outliers_lookout",
+                                  options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
+                                  skip = TRUE,
+                                  id = rand_id("outliers_lookout")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
@@ -93,7 +91,7 @@ step_outliers_lookout_new <-
       terms = terms,
       role = role,
       trained = trained,
-      outlier_probability =outlier_probability,
+      outlier_probability = outlier_probability,
       name_mutate = name_mutate,
       options = options,
       skip = skip,
@@ -103,8 +101,7 @@ step_outliers_lookout_new <-
 
 
 get_train_probability_lookout <- function(x, args = NULL) {
-
-  res <- rlang::exec('lookout',X = x,!!!args)
+  res <- rlang::exec("lookout", X = x, !!!args)
 
   invert_prob <- function(vector_probs) {
     (vector_probs - 1) * -1
@@ -155,16 +152,13 @@ prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
 
 #' @export
 bake.step_outliers_lookout <- function(object, new_data, ...) {
-
   new_data[[object$name_mutate]] <- object$outlier_probability
 
   new_data
-
 }
 
 
 format_prob <- function(step_outlier) {
-
   x <- step_outlier$outlier_probability
   tibble::tibble(
     index = seq_len(length(x)),
@@ -177,7 +171,7 @@ format_prob <- function(step_outlier) {
 #' @export
 tidy.step_outliers_lookout <- function(x, ...) {
   if (is_trained(x)) {
-    res <-format_prob(x)
+    res <- format_prob(x)
   }
   else {
     res <-
@@ -196,4 +190,3 @@ tidy.step_outliers_lookout <- function(x, ...) {
 required_pkgs.step_outliers_lookout <- function(x, ...) {
   c("lookout")
 }
-

@@ -34,26 +34,24 @@
 #' library(recipes)
 #' library(tidy.outliers)
 #' library(OutlierDetection)
-#'  rec_obj <-
-#'  recipe(mpg ~ ., data = mtcars) %>%
-#'  step_outliers_maha(all_numeric(),-all_outcomes()) %>%
-#'  prep(mtcars)
+#' rec_obj <-
+#'   recipe(mpg ~ ., data = mtcars) %>%
+#'   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+#'   prep(mtcars)
 #'
-#'juice(rec_obj)
+#' juice(rec_obj)
 #'
-#'tidy(rec_obj,number = 1)
-#'
+#' tidy(rec_obj, number = 1)
 step_outliers_maha <- function(
-  recipe,
-  ...,
-  role = NA,
-  trained = FALSE,
-  outlier_probability = NULL,
-  name_mutate = ".outliers_maha",
-  options = list(cutoff = 0,rnames = FALSE),
-  skip = TRUE,
-  id = rand_id("outliers_maha")
-) {
+                               recipe,
+                               ...,
+                               role = NA,
+                               trained = FALSE,
+                               outlier_probability = NULL,
+                               name_mutate = ".outliers_maha",
+                               options = list(cutoff = 0, rnames = FALSE),
+                               skip = TRUE,
+                               id = rand_id("outliers_maha")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
@@ -93,7 +91,7 @@ step_outliers_maha_new <-
       terms = terms,
       role = role,
       trained = trained,
-      outlier_probability =outlier_probability,
+      outlier_probability = outlier_probability,
       name_mutate = name_mutate,
       options = options,
       skip = skip,
@@ -103,10 +101,9 @@ step_outliers_maha_new <-
 
 
 get_train_probability_maha <- function(x, args = NULL) {
+  args$cutoff <- 0
 
-  args$cutoff = 0
-
-  res <- rlang::exec('maha',x = x,!!!args)
+  res <- rlang::exec("maha", x = x, !!!args)
 
   res$`Outlier Probability`
 }
@@ -153,16 +150,13 @@ prep.step_outliers_maha <- function(x, training, info = NULL, ...) {
 
 #' @export
 bake.step_outliers_maha <- function(object, new_data, ...) {
-
   new_data[[object$name_mutate]] <- object$outlier_probability
 
   new_data
-
 }
 
 
 format_prob <- function(step_outlier) {
-
   x <- step_outlier$outlier_probability
   tibble::tibble(
     index = seq_len(length(x)),
@@ -175,7 +169,7 @@ format_prob <- function(step_outlier) {
 #' @export
 tidy.step_outliers_maha <- function(x, ...) {
   if (is_trained(x)) {
-    res <-format_prob(x)
+    res <- format_prob(x)
   }
   else {
     res <-

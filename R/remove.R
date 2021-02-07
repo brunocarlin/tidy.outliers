@@ -36,29 +36,27 @@
 #' library(recipes)
 #' library(tidy.outliers)
 #' library(OutlierDetection)
-#'  rec_obj <-
-#'  recipe(mpg ~ ., data = mtcars) %>%
-#'  step_outliers_maha(all_numeric(),-all_outcomes()) %>%
-#'  step_outliers_remove(contains(r"(.outliers)")) %>%
-#'  prep(mtcars)
+#' rec_obj <-
+#'   recipe(mpg ~ ., data = mtcars) %>%
+#'   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+#'   step_outliers_remove(contains(r"(.outliers)")) %>%
+#'   prep(mtcars)
 #'
-#'juice(rec_obj)
+#' juice(rec_obj)
 #'
-#'tidy(rec_obj,number = 2)
-#'
+#' tidy(rec_obj, number = 2)
 step_outliers_remove <- function(
-  recipe,
-  ...,
-  aggregation_function = mean,
-  probability_dropout = .95,
-  outliers_indexes = NULL,
-  aggregation_results = NULL,
-  col_names = NULL,
-  role = NA,
-  trained = FALSE,
-  skip = TRUE,
-  id = rand_id("outliers_remove")
-) {
+                                 recipe,
+                                 ...,
+                                 aggregation_function = mean,
+                                 probability_dropout = .95,
+                                 outliers_indexes = NULL,
+                                 aggregation_results = NULL,
+                                 col_names = NULL,
+                                 role = NA,
+                                 trained = FALSE,
+                                 skip = TRUE,
+                                 id = rand_id("outliers_remove")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
@@ -111,14 +109,13 @@ step_outliers_remove_new <-
   }
 
 
-get_outliers_combination <- function(x,aggregation_function,probability_dropout) {
-
+get_outliers_combination <- function(x, aggregation_function, probability_dropout) {
   aggregation_results <- apply(x, 1, aggregation_function)
 
 
   outliers_indexes <- which(aggregation_results >= probability_dropout)
 
-  list(outliers_indexes = outliers_indexes,aggregation_results = aggregation_results)
+  list(outliers_indexes = outliers_indexes, aggregation_results = aggregation_results)
 }
 
 #' @export
@@ -129,9 +126,10 @@ prep.step_outliers_remove <- function(x, training, info = NULL, ...) {
   check_type(training[, col_names])
 
 
-  outliers_combination <-  get_outliers_combination(training[, col_names],
-                                                    aggregation_function = x$aggregation_function,
-                                                    probability_dropout = x$probability_dropout)
+  outliers_combination <- get_outliers_combination(training[, col_names],
+    aggregation_function = x$aggregation_function,
+    probability_dropout = x$probability_dropout
+  )
 
   outliers_indexes <- outliers_combination$outliers_indexes
 
@@ -164,23 +162,19 @@ bake.step_outliers_remove <- function(object, new_data, ...) {
 
   else {
     new_data <- new_data[-object$outliers_indexes, ]
-
   }
 
   ## Remove all extra columns
 
-  new_data <- new_data[, ! names(new_data) %in% object$col_names, drop = F]
+  new_data <- new_data[, !names(new_data) %in% object$col_names, drop = F]
 
   ## Always convert to tibbles on the way out
 
   tibble::as_tibble(new_data)
-
 }
 
 
 format_remove <- function(step_outlier) {
-
-
   outliers_indexes <- step_outlier$outliers_indexes
 
   aggregation_results <- step_outlier$aggregation_results
@@ -189,10 +183,10 @@ format_remove <- function(step_outlier) {
 
   original_length <- length(aggregation_results)
 
-  index <-  seq_len(original_length)
+  index <- seq_len(original_length)
 
 
-  outliers <-  index %in% outliers_indexes
+  outliers <- index %in% outliers_indexes
 
   tibble::tibble(
     index = index,
@@ -206,7 +200,7 @@ format_remove <- function(step_outlier) {
 #' @export
 tidy.step_outliers_remove <- function(x, ...) {
   if (is_trained(x)) {
-    res <-format_remove(x)
+    res <- format_remove(x)
   }
   else {
     res <-
@@ -219,7 +213,7 @@ tidy.step_outliers_remove <- function(x, ...) {
 }
 
 #' @export
-tunable.step_outliers_remove <- function (x, ...) {
+tunable.step_outliers_remove <- function(x, ...) {
   tibble::tibble(
     name = c("probability_dropout"),
     call_info = list(list(pkg = "dials", fun = "dropout")),
