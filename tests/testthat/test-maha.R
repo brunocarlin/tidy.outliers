@@ -38,3 +38,15 @@ test_that("tidy probs work", {
   expect_equal(nrow(mtcars),nrow(tidy_result))
 })
 #> Test passed 😀
+
+tidy_rec_obj_not_prep <-
+  recipe(mpg ~ ., data = mtcars) %>%
+  step_outliers_maha(all_numeric(),-all_outcomes()) %>%
+  tidy(number = 1)
+
+test_that("tidy probs go to NA", {
+  expect_equal(all(is.na(tidy_rec_obj_not_prep$outlier_probability)),expected = T)
+})
+
+
+#> Test passed 😀

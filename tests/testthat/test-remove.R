@@ -40,3 +40,36 @@ test_that("juice results works", {
 
 
 #> Test passed 😀
+
+tidy_rec_obj_not_prep <-
+  recipe(mpg ~ ., data = mtcars) %>%
+  step_outliers_maha(all_numeric(),-all_outcomes()) %>%
+  step_outliers_remove(contains(r"(.outliers)")) %>%
+  tidy(number = 2)
+
+test_that("tidy not prepped works", {
+  expect_equal(all(tidy_rec_obj_not_prep$aggregation_results == 0),expected = T)
+  expect_equal(all(tidy_rec_obj_not_prep$outliers == F),expected = T)
+})
+
+
+rec_obj_tune <-
+  recipe(mpg ~ ., data = mtcars) %>%
+  step_outliers_maha(all_numeric(),-all_outcomes()) %>%
+  step_outliers_remove(contains(r"(.outliers)"),probability_dropout = tune("dropout"))
+
+
+rec_param <- tunable(rec_obj_tune)
+
+
+test_that("tune wrorks", {
+  expect_equal(rec_param$name,"probability_dropout")
+  expect_true(all(rec_param$source == "recipe"))
+  expect_true(is.list(rec_param$call_info))
+  expect_equal(nrow(rec_param), 1)
+  expect_equal(
+    names(rec_param),
+    c("name", "call_info", "source", "component", "component_id")
+  )
+})
+
