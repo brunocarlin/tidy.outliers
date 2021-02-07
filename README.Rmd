@@ -44,7 +44,7 @@ devtools::install_github("brunocarlin/tidy.outliers")
 ```
 
 
-## Example
+## Example Mutation
 
 This is a basic example which shows you how to solve a common problem:
 
@@ -58,7 +58,7 @@ library(OutlierDetection)
 ```
 
 
-### Create recipe
+### Create recipe mutating probabilities
 
 ```{r recipe}
 rec_obj <-
@@ -78,4 +78,33 @@ juice(rec_obj) %>%
 ```{r tidy}
 tidy(rec_obj,number = 1)
 ```
+## Example filtering
 
+### Create recipe filtering outliers
+
+```{r recipe remove}
+rec_obj2 <-
+  recipe(mpg ~ ., data = mtcars) %>%
+  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  step_outliers_remove(contains(r"(.outliers)")) %>% 
+  prep(mtcars)
+```
+
+
+### Investigate results 
+
+We can see that the mtcars dataset got reduced by our function
+
+```{r juice remove}
+juice(rec_obj2) %>% glimpse()
+```
+```{r}
+mtcars %>% glimpse()
+```
+
+And we can get which were the outliers and their probability
+
+```{r tidy remove}
+tidy(rec_obj2,number = 2) %>% 
+  arrange(aggregation_results %>% desc())
+```
