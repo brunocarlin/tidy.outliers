@@ -48,7 +48,34 @@ devtools::install_github("brunocarlin/tidy.outliers")
 
 This is a basic example which shows you how to solve a common problem:
 
-```{r example}
+
+### Load Libraries
+
+```{r libraries, echo=TRUE, warning=FALSE,message=FALSE}
+library(recipes)
 library(tidy.outliers)
-## basic example code
+library(OutlierDetection)
 ```
+
+
+### Create recipe
+
+```{r recipe}
+rec_obj <-
+  recipe(mpg ~ ., data = mtcars) %>%
+  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  prep(mtcars)
+```
+
+
+### Investigate results
+
+```{r juice}
+juice(rec_obj) %>% 
+  select(.outliers_maha)
+```
+
+```{r tidy}
+tidy(rec_obj,number = 1)
+```
+
