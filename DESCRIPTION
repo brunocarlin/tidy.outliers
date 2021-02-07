@@ -2,12 +2,12 @@ Package: tidy.outliers
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Bruno",
+           family = "Carlin",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "brunotestaguzzat@gmail.com",
+           comment = c(ORCID = "0000-0002-7701-2953"))
+Description: Creates two tipes of tidy steps for outliers: "probability" caluculation and outlier removal, the idea is that you can combine multiple methods and use them easily on a workflows modeling case.
 License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0),
