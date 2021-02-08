@@ -147,7 +147,7 @@ ames_rec <-
   step_ns(Latitude,  deg_free = tune("lat df")) %>% 
   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
   step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) %>% 
-  step_outliers_remove(contains(r"(.outliers)"),probability_dropout = tune("dropout"))
+  step_outliers_remove(contains(r"(.outliers)"),probability_dropout = tune("dropout"),aggregation_function = tune("aggregation"))
 
 ```
 
@@ -166,15 +166,24 @@ ames_param <-
   update(
     `long df` = spline_degree(), 
     `lat df` = spline_degree(),
-    dropout = dropout(range = c(0.75, 1))
+    dropout = dropout(range = c(0.75, 1)),
+    aggregation = aggregation() %>% value_set(c("mean","weighted_mean"))
   )
+```
+
+## Create weighted_mean func
+
+```{r}
+weighted_mean <- function(x) {
+  x[[1]] * .75 + x[[2]] * .25
+}
 ```
 
 
 ### Grid Search picks random points
 
 ```{r}
-spline_grid <- grid_max_entropy(ames_param, size = 10)
+spline_grid <- grid_max_entropy(ames_param, size = 20)
 spline_grid
 ```
 
