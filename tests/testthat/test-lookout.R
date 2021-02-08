@@ -1,6 +1,7 @@
 library(recipes)
 library(tidy.outliers)
 library(OutlierDetection)
+library(tune)
 
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) %>%
@@ -12,20 +13,12 @@ juice_result <- juice(rec_obj)
 
 outlier_probability <- juice_result$.outliers_lookout
 
-test_that("probabilities make sense", {
-  expect_gte(min(outlier_probability), 0)
-  expect_lte(min(outlier_probability), 1)
-  expect_equal(any(is.na(outlier_probability)), expected = F)
-})
-
+test_probabilities(outlier_probability)
 # > Test passed <U+0001F638>
 
 
-test_that("na values create an error", {
-  expect_error(recipe(mpg ~ ., data = mtcars2) %>%
-    step_outliers_maha(all_numeric(), -all_outcomes()) %>%
-    prep(mtcars2))
-})
+na_values_break_fun(step_outliers_lookout)
+# Test Passed
 
 
 # > Test passed <U+0001F600>
@@ -48,3 +41,4 @@ tidy_rec_obj_not_prep <-
 test_that("tidy probs go to NA", {
   expect_equal(all(is.na(tidy_rec_obj_not_prep$outlier_probability)), expected = T)
 })
+

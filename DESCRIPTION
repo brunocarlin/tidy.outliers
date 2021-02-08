@@ -24,6 +24,7 @@ Imports:
     OutlierDetection,
     tibble,
     rlang,
-    lookout (>= 0.0.0.9000)
+    lookout (>= 0.0.0.9000),
+    tune
 Remotes: 
     sevvandi/lookout

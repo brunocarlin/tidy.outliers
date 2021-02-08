@@ -79,16 +79,15 @@ conducted outside of the training set.
 library(recipes)
 library(tidy.outliers)
 library(OutlierDetection)
- rec_obj <-
- recipe(mpg ~ ., data = mtcars) \%>\%
- step_outliers_maha(all_numeric(),-all_outcomes()) \%>\%
- step_outliers_remove(contains(r"(.outliers)")) \%>\%
- prep(mtcars)
+rec_obj <-
+  recipe(mpg ~ ., data = mtcars) \%>\%
+  step_outliers_maha(all_numeric(), -all_outcomes()) \%>\%
+  step_outliers_remove(contains(r"(.outliers)")) \%>\%
+  prep(mtcars)
 
 juice(rec_obj)
 
-tidy(rec_obj,number = 2)
-
+tidy(rec_obj, number = 2)
 }
 \concept{preprocessing}
 \keyword{datagen}
