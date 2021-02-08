@@ -69,7 +69,7 @@ step_outliers_remove <- function(
       terms = terms,
       trained = trained,
       role = role,
-      aggregation_function = mean,
+      aggregation_function = aggregation_function,
       probability_dropout = probability_dropout,
       outliers_indexes = outliers_indexes,
       aggregation_results = aggregation_results,
@@ -212,13 +212,37 @@ tidy.step_outliers_remove <- function(x, ...) {
   }
 }
 
+#' function used to generate valid choices for `aggregation_function`
+#' @param values a few common choices for aggregation
+#'
+#' @export
+aggregation <- function(values = c( "mean","min", "max")) {
+  dials::new_qual_param(
+    type = "character",
+    values = values,
+    # By default, the first value is selected as default. We'll specify that to
+    # make it clear.
+    default = "mean",
+    label = c(aggregation = "Aggregation Method")
+  )
+}
+
+
 #' @export
 tunable.step_outliers_remove <- function(x, ...) {
-  tibble::tibble(
+  probability_dropout <- tibble::tibble(
     name = c("probability_dropout"),
     call_info = list(list(pkg = "dials", fun = "dropout")),
     source = "recipe",
     component = "step_outliers_remove",
     component_id = x$id
   )
+  aggregation_function <- tibble::tibble(
+    name = c("aggregation_function"),
+    call_info = list(list(pkg = "tidy.outliers", fun = "aggregation")),
+    source = "recipe",
+    component = "step_outliers_remove",
+    component_id = x$id
+  )
+  dplyr::bind_rows(probability_dropout,aggregation_function)
 }

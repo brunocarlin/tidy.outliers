@@ -28,7 +28,7 @@ test_that("tidy probs work", {
 })
 
 
-# > Test passed <U+0001F600>
+# > Test passed
 
 tidy_rec_obj_not_prep <-
   recipe(mpg ~ ., data = mtcars) %>%
@@ -40,4 +40,4 @@ test_that("tidy probs go to NA", {
 })
 
 
-# > Test passed <U+0001F600>
+# > Test passed

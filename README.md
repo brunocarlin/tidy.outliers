@@ -89,16 +89,16 @@ tidy(rec_obj,number = 1)
 #> # A tibble: 32 x 3
 #>    index outlier_probability id                 
 #>    <int>               <dbl> <chr>              
-#>  1     1               0.411 outliers_maha_UScb9
-#>  2     2               0.374 outliers_maha_UScb9
-#>  3     3               0.222 outliers_maha_UScb9
-#>  4     4               0.192 outliers_maha_UScb9
-#>  5     5               0.124 outliers_maha_UScb9
-#>  6     6               0.350 outliers_maha_UScb9
-#>  7     7               0.481 outliers_maha_UScb9
-#>  8     8               0.493 outliers_maha_UScb9
-#>  9     9               0.985 outliers_maha_UScb9
-#> 10    10               0.737 outliers_maha_UScb9
+#>  1     1               0.411 outliers_maha_gjygR
+#>  2     2               0.374 outliers_maha_gjygR
+#>  3     3               0.222 outliers_maha_gjygR
+#>  4     4               0.192 outliers_maha_gjygR
+#>  5     5               0.124 outliers_maha_gjygR
+#>  6     6               0.350 outliers_maha_gjygR
+#>  7     7               0.481 outliers_maha_gjygR
+#>  8     8               0.493 outliers_maha_gjygR
+#>  9     9               0.985 outliers_maha_gjygR
+#> 10    10               0.737 outliers_maha_gjygR
 #> # ... with 22 more rows
 ```
 
@@ -107,16 +107,16 @@ tidy(rec_obj,number = 2)
 #> # A tibble: 32 x 3
 #>    index outlier_probability id                    
 #>    <int>               <dbl> <chr>                 
-#>  1     1                   0 outliers_lookout_jpLf8
-#>  2     2                   0 outliers_lookout_jpLf8
-#>  3     3                   0 outliers_lookout_jpLf8
-#>  4     4                   0 outliers_lookout_jpLf8
-#>  5     5                   0 outliers_lookout_jpLf8
-#>  6     6                   0 outliers_lookout_jpLf8
-#>  7     7                   0 outliers_lookout_jpLf8
-#>  8     8                   0 outliers_lookout_jpLf8
-#>  9     9                   0 outliers_lookout_jpLf8
-#> 10    10                   0 outliers_lookout_jpLf8
+#>  1     1                   0 outliers_lookout_rwNzw
+#>  2     2                   0 outliers_lookout_rwNzw
+#>  3     3                   0 outliers_lookout_rwNzw
+#>  4     4                   0 outliers_lookout_rwNzw
+#>  5     5                   0 outliers_lookout_rwNzw
+#>  6     6                   0 outliers_lookout_rwNzw
+#>  7     7                   0 outliers_lookout_rwNzw
+#>  8     8                   0 outliers_lookout_rwNzw
+#>  9     9                   0 outliers_lookout_rwNzw
+#> 10    10                   0 outliers_lookout_rwNzw
 #> # ... with 22 more rows
 ```
 
@@ -224,19 +224,20 @@ ames_rec <-
   step_ns(Latitude,  deg_free = tune("lat df")) %>% 
   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
   step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) %>% 
-  step_outliers_remove(contains(r"(.outliers)"),probability_dropout = tune("dropout"))
+  step_outliers_remove(contains(r"(.outliers)"),probability_dropout = tune("dropout"),aggregation_function = tune("aggregation"))
 ```
 
 ### See the parameters
 
 ``` r
 parameters(ames_rec)
-#> Collection of 3 parameters for tuning
+#> Collection of 4 parameters for tuning
 #> 
-#>  identifier                type    object
-#>     long df            deg_free nparam[+]
-#>      lat df            deg_free nparam[+]
-#>     dropout probability_dropout nparam[+]
+#>   identifier                 type    object
+#>      long df             deg_free nparam[+]
+#>       lat df             deg_free nparam[+]
+#>      dropout  probability_dropout nparam[+]
+#>  aggregation aggregation_function dparam[+]
 ```
 
 ### There is already a function for dropouts implemented by dials
@@ -248,28 +249,47 @@ ames_param <-
   update(
     `long df` = spline_degree(), 
     `lat df` = spline_degree(),
-    dropout = dropout(range = c(0.75, 1))
+    dropout = dropout(range = c(0.75, 1)),
+    aggregation = aggregation() %>% value_set(c("mean","weighted_mean"))
   )
+```
+
+## Create weighted\_mean func
+
+``` r
+weighted_mean <- function(x) {
+  x[[1]] * .75 + x[[2]] * .25
+}
 ```
 
 ### Grid Search picks random points
 
 ``` r
-spline_grid <- grid_max_entropy(ames_param, size = 10)
+spline_grid <- grid_max_entropy(ames_param, size = 20)
 spline_grid
-#> # A tibble: 10 x 3
-#>    `long df` `lat df` dropout
-#>        <int>    <int>   <dbl>
-#>  1         9        3   0.752
-#>  2         4        5   0.958
-#>  3         2        7   0.769
-#>  4        10        1   0.882
-#>  5         7        3   0.996
-#>  6         6        8   0.786
-#>  7         2        1   0.817
-#>  8         5        4   0.840
-#>  9         5        8   0.898
-#> 10         9        6   0.947
+#> # A tibble: 20 x 4
+#>    `long df` `lat df` dropout aggregation  
+#>        <int>    <int>   <dbl> <chr>        
+#>  1         2        3   0.983 mean         
+#>  2         3        9   0.992 weighted_mean
+#>  3         9        3   0.766 mean         
+#>  4         9        1   0.995 weighted_mean
+#>  5        10        9   0.857 weighted_mean
+#>  6         5       10   0.878 mean         
+#>  7         5        1   0.839 weighted_mean
+#>  8         9        3   0.808 weighted_mean
+#>  9         6        6   0.843 weighted_mean
+#> 10         2        4   0.954 weighted_mean
+#> 11         9        1   0.992 mean         
+#> 12         5        3   0.841 mean         
+#> 13         9        7   0.980 weighted_mean
+#> 14         3        9   0.838 weighted_mean
+#> 15         2        2   0.797 mean         
+#> 16         2        4   0.790 weighted_mean
+#> 17         8        9   0.982 mean         
+#> 18        10        7   0.888 mean         
+#> 19         2        8   0.877 weighted_mean
+#> 20         9        6   0.752 weighted_mean
 ```
 
 ### create a simple model
@@ -309,19 +329,30 @@ rmse_vals <-
   dplyr::filter(.metric == "rmse") %>% 
   arrange(mean)
 rmse_vals
-#> # A tibble: 10 x 9
-#>    `long df` `lat df` dropout .metric .estimator   mean     n std_err .config   
-#>        <int>    <int>   <dbl> <chr>   <chr>       <dbl> <int>   <dbl> <chr>     
-#>  1         6        8   0.786 rmse    standard   0.0992    10 0.00229 Preproces~
-#>  2         5        8   0.898 rmse    standard   0.0993    10 0.00224 Preproces~
-#>  3         9        6   0.947 rmse    standard   0.100     10 0.00248 Preproces~
-#>  4         9        3   0.752 rmse    standard   0.101     10 0.00240 Preproces~
-#>  5         2        7   0.769 rmse    standard   0.102     10 0.00239 Preproces~
-#>  6         7        3   0.996 rmse    standard   0.102     10 0.00219 Preproces~
-#>  7         5        4   0.840 rmse    standard   0.102     10 0.00228 Preproces~
-#>  8         4        5   0.958 rmse    standard   0.102     10 0.00230 Preproces~
-#>  9        10        1   0.882 rmse    standard   0.109     10 0.00287 Preproces~
-#> 10         2        1   0.817 rmse    standard   0.117     10 0.00288 Preproces~
+#> # A tibble: 20 x 10
+#>    `long df` `lat df` dropout aggregation .metric .estimator   mean     n
+#>        <int>    <int>   <dbl> <chr>       <chr>   <chr>       <dbl> <int>
+#>  1         8        9   0.982 mean        rmse    standard   0.0987    10
+#>  2         5       10   0.878 mean        rmse    standard   0.0988    10
+#>  3        10        9   0.857 weighted_m~ rmse    standard   0.0989    10
+#>  4         3        9   0.992 weighted_m~ rmse    standard   0.0993    10
+#>  5         2        8   0.877 weighted_m~ rmse    standard   0.0994    10
+#>  6         3        9   0.838 weighted_m~ rmse    standard   0.0995    10
+#>  7         9        7   0.980 weighted_m~ rmse    standard   0.100     10
+#>  8        10        7   0.888 mean        rmse    standard   0.101     10
+#>  9         9        6   0.752 weighted_m~ rmse    standard   0.101     10
+#> 10         6        6   0.843 weighted_m~ rmse    standard   0.101     10
+#> 11         9        3   0.808 weighted_m~ rmse    standard   0.101     10
+#> 12         9        3   0.766 mean        rmse    standard   0.102     10
+#> 13         5        3   0.841 mean        rmse    standard   0.102     10
+#> 14         2        4   0.954 weighted_m~ rmse    standard   0.102     10
+#> 15         2        3   0.983 mean        rmse    standard   0.102     10
+#> 16         2        2   0.797 mean        rmse    standard   0.104     10
+#> 17         2        4   0.790 weighted_m~ rmse    standard   0.106     10
+#> 18         9        1   0.995 weighted_m~ rmse    standard   0.110     10
+#> 19         9        1   0.992 mean        rmse    standard   0.110     10
+#> 20         5        1   0.839 weighted_m~ rmse    standard   0.112     10
+#> # ... with 2 more variables: std_err <dbl>, .config <chr>
 ```
 
 ## Plot it
@@ -330,4 +361,4 @@ rmse_vals
 autoplot(ames_res,metric = "rmse")
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />

@@ -25,6 +25,8 @@ Imports:
     tibble,
     rlang,
     lookout (>= 0.0.0.9000),
-    tune
+    tune,
+    dials,
+    dplyr
 Remotes: 
     sevvandi/lookout
