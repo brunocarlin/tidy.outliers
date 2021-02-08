@@ -41,4 +41,3 @@ tidy_rec_obj_not_prep <-
 test_that("tidy probs go to NA", {
   expect_equal(all(is.na(tidy_rec_obj_not_prep$outlier_probability)), expected = T)
 })
-

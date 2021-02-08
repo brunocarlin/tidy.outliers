@@ -7,14 +7,13 @@ test_probabilities <- function(outlier_probability) {
 }
 
 
-na_values_break_fun <- function(step,...) {
+na_values_break_fun <- function(step, ...) {
   mtcars2 <- mtcars
-  mtcars2[2,2] <- NA
+  mtcars2[2, 2] <- NA
 
   test_that("na values create an error", {
     expect_error(recipe(mpg ~ ., data = mtcars2) %>%
-                   step(all_numeric(), -all_outcomes()) %>%
-                   prep(mtcars2))
+      step(all_numeric(), -all_outcomes()) %>%
+      prep(mtcars2))
   })
-
 }
