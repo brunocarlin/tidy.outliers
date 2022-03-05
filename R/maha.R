@@ -44,17 +44,16 @@
 #' juice(rec_obj)
 #'
 #' tidy(rec_obj, number = 1)
-step_outliers_maha <- function(
-    recipe,
-    ...,
-    role = NA,
-    trained = FALSE,
-    outlier_score = NULL,
-    columns = NULL,
-    name_mutate = ".outliers_maha",
-    options = list(),
-    skip = TRUE,
-    id = rand_id("outliers_maha")) {
+step_outliers_maha <- function(recipe,
+                               ...,
+                               role = NA,
+                               trained = FALSE,
+                               outlier_score = NULL,
+                               columns = NULL,
+                               name_mutate = ".outliers_maha",
+                               options = list(),
+                               skip = TRUE,
+                               id = rand_id("outliers_maha")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
@@ -105,25 +104,20 @@ step_outliers_maha_new <-
 
 
 get_train_score_maha <- function(x, args = NULL) {
-
-  maha=function(x)
-  {
-    m=mahalanobis(x,colMeans(x),cov(x))
-    p=pchisq(m,ncol(x))
+  maha <- function(x) {
+    m <- mahalanobis(x, colMeans(x), cov(x))
+    p <- pchisq(m, ncol(x))
 
     return(p)
-
   }
 
 
   maha(x)
-
 }
 
 
 #' @export
 prep.step_outliers_maha <- function(x, training, info = NULL, ...) {
-
   col_names <- recipes_eval_select(x$terms, training, info)
   ## You can add error trapping for non-numeric data here and so on.
 
@@ -162,7 +156,6 @@ prep.step_outliers_maha <- function(x, training, info = NULL, ...) {
 
 #' @export
 bake.step_outliers_maha <- function(object, new_data, ...) {
-
   new_data[[object$name_mutate]] <- object$outlier_score
 
   new_data
@@ -183,8 +176,7 @@ format_prob <- function(step_outlier) {
 tidy.step_outliers_maha <- function(x, ...) {
   if (is_trained(x)) {
     res <- format_prob(x)
-  }
-  else {
+  } else {
     res <-
       tibble(
         index = seq_len(length(x)),

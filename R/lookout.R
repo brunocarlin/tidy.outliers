@@ -40,18 +40,17 @@
 #' juice(rec_obj)
 #'
 #' tidy(rec_obj, number = 1)
-step_outliers_lookout <- function(
-    recipe,
-    ...,
-    role = NA,
-    trained = FALSE,
-    outlier_score = NULL,
-    columns = NULL,
-    name_mutate = ".outliers_lookout",
-    options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
-    invert_results = FALSE,
-    skip = TRUE,
-    id = rand_id("outliers_lookout")) {
+step_outliers_lookout <- function(recipe,
+                                  ...,
+                                  role = NA,
+                                  trained = FALSE,
+                                  outlier_score = NULL,
+                                  columns = NULL,
+                                  name_mutate = ".outliers_lookout",
+                                  options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
+                                  invert_results = FALSE,
+                                  skip = TRUE,
+                                  id = rand_id("outliers_lookout")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
@@ -106,11 +105,11 @@ step_outliers_lookout_new <-
   }
 
 
-get_train_score_lookout <- function(x, args = NULL,invert_results = TRUE) {
+get_train_score_lookout <- function(x, args = NULL, invert_results = TRUE) {
   res <- rlang::exec("lookout", X = x, !!!args)$`outlier_score`
 
   if (invert_results) {
-   res <- (res - 1) * -1
+    res <- (res - 1) * -1
   }
 
   return(res)
@@ -119,7 +118,7 @@ get_train_score_lookout <- function(x, args = NULL,invert_results = TRUE) {
 
 #' @export
 prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
-  col_names <- recipes_eval_select(x$terms,training, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info = info)
   ## You can add error trapping for non-numeric data here and so on.
 
   check_type(training[, col_names])
@@ -136,7 +135,7 @@ prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
   }
 
 
-  outlier_score <- training[, col_names] %>% get_train_score_lookout(args = x$options,invert_results = x$invert_results)
+  outlier_score <- training[, col_names] %>% get_train_score_lookout(args = x$options, invert_results = x$invert_results)
 
 
   ## Use the constructor function to return the updated object.
@@ -159,7 +158,6 @@ prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
 
 #' @export
 bake.step_outliers_lookout <- function(object, new_data, ...) {
-
   new_data[[object$name_mutate]] <- object$outlier_score
 
   new_data
@@ -180,8 +178,7 @@ format_prob <- function(step_outlier) {
 tidy.step_outliers_lookout <- function(x, ...) {
   if (is_trained(x)) {
     res <- format_prob(x)
-  }
-  else {
+  } else {
     res <-
       tibble(
         index = seq_len(length(x)),

@@ -44,18 +44,17 @@
 #' juice(rec_obj)
 #'
 #' tidy(rec_obj, number = 2)
-step_outliers_remove <- function(
-    recipe,
-    ...,
-    aggregation_function = mean,
-    score_dropout = .95,
-    outliers_indexes = NULL,
-    aggregation_results = NULL,
-    col_names = NULL,
-    role = NA,
-    trained = FALSE,
-    skip = TRUE,
-    id = rand_id("outliers_remove")) {
+step_outliers_remove <- function(recipe,
+                                 ...,
+                                 aggregation_function = mean,
+                                 score_dropout = .95,
+                                 outliers_indexes = NULL,
+                                 aggregation_results = NULL,
+                                 col_names = NULL,
+                                 role = NA,
+                                 trained = FALSE,
+                                 skip = TRUE,
+                                 id = rand_id("outliers_remove")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
@@ -119,15 +118,15 @@ get_outliers_combination <- function(x, aggregation_function, score_dropout) {
 
 #' @export
 prep.step_outliers_remove <- function(x, training, info = NULL, ...) {
-  col_names <- recipes_eval_select(x$terms,training, info = info)
+  col_names <- recipes_eval_select(x$terms, training, info = info)
   ## You can add error trapping for non-numeric data here and so on.
 
   check_type(training[, col_names])
 
 
   outliers_combination <- get_outliers_combination(training[, col_names],
-                                                   aggregation_function = x$aggregation_function,
-                                                   score_dropout = x$score_dropout
+    aggregation_function = x$aggregation_function,
+    score_dropout = x$score_dropout
   )
 
   outliers_indexes <- outliers_combination$outliers_indexes
@@ -157,9 +156,7 @@ bake.step_outliers_remove <- function(object, new_data, ...) {
   if (identical(object$outliers_indexes, as.integer())) {
     # check for when nothing was filtered out
     # do nothing
-  }
-
-  else {
+  } else {
     new_data <- new_data[-object$outliers_indexes, ]
   }
 
@@ -200,8 +197,7 @@ format_remove <- function(step_outlier) {
 tidy.step_outliers_remove <- function(x, ...) {
   if (is_trained(x)) {
     res <- format_remove(x)
-  }
-  else {
+  } else {
     res <-
       tibble(
         index = seq_len(length(x)),
@@ -215,7 +211,7 @@ tidy.step_outliers_remove <- function(x, ...) {
 #' @param values a few common choices for aggregation
 #'
 #' @export
-aggregation <- function(values = c( "mean","min", "max")) {
+aggregation <- function(values = c("mean", "min", "max")) {
   dials::new_qual_param(
     type = "character",
     values = values,
@@ -243,5 +239,5 @@ tunable.step_outliers_remove <- function(x, ...) {
     component = "step_outliers_remove",
     component_id = x$id
   )
-  dplyr::bind_rows(score_dropout,aggregation_function)
+  dplyr::bind_rows(score_dropout, aggregation_function)
 }

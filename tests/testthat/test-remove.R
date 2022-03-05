@@ -58,7 +58,7 @@ rec_param <- tunable(rec_obj_tune)
 
 
 test_that("tune wrorks", {
-  expect_equal(rec_param$name, c("score_dropout","aggregation_function"))
+  expect_equal(rec_param$name, c("score_dropout", "aggregation_function"))
   expect_true(all(rec_param$source == "recipe"))
   expect_true(is.list(rec_param$call_info))
   expect_equal(nrow(rec_param), 2)
