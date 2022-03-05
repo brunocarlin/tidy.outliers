@@ -10,7 +10,7 @@ Authors@R:
 Description: Creates two tipes of tidy steps for outliers: "probability" caluculation and outlier removal, the idea is that you can combine multiple methods and use them easily on a workflows modeling case.
 License: MIT + file LICENSE
 Depends:
-  R (>= 3.0.0)
+  R (>= 4.0.0)
 Suggests: 
     testthat (>= 3.0.0),
     covr,
