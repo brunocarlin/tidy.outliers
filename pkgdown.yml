@@ -1,6 +1,8 @@
 pandoc: 2.14.2
 pkgdown: 2.0.2
 pkgdown_sha: ~
-articles: {}
-last_built: 2022-03-05T06:41Z
+articles:
+  getting_outlier_scores: getting_outlier_scores.html
+  integration_tidymodels: integration_tidymodels.html
+last_built: 2022-03-05T17:49Z
 
