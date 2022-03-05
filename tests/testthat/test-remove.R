@@ -70,7 +70,7 @@ test_that("tune wrorks", {
 
 # Test that custom functions work with tidymodels
 
-ames <- modeldata::ames
+data(ames)
 
 
 rec_obj_tune <-
