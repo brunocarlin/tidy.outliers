@@ -45,17 +45,17 @@
 #'
 #' tidy(rec_obj, number = 2)
 step_outliers_remove <- function(
-                                 recipe,
-                                 ...,
-                                 aggregation_function = mean,
-                                 probability_dropout = .95,
-                                 outliers_indexes = NULL,
-                                 aggregation_results = NULL,
-                                 col_names = NULL,
-                                 role = NA,
-                                 trained = FALSE,
-                                 skip = TRUE,
-                                 id = rand_id("outliers_remove")) {
+    recipe,
+    ...,
+    aggregation_function = mean,
+    probability_dropout = .95,
+    outliers_indexes = NULL,
+    aggregation_results = NULL,
+    col_names = NULL,
+    role = NA,
+    trained = FALSE,
+    skip = TRUE,
+    id = rand_id("outliers_remove")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
@@ -126,8 +126,8 @@ prep.step_outliers_remove <- function(x, training, info = NULL, ...) {
 
 
   outliers_combination <- get_outliers_combination(training[, col_names],
-    aggregation_function = x$aggregation_function,
-    probability_dropout = x$probability_dropout
+                                                   aggregation_function = x$aggregation_function,
+                                                   probability_dropout = x$probability_dropout
   )
 
   outliers_indexes <- outliers_combination$outliers_indexes

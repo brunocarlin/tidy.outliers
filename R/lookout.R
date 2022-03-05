@@ -44,16 +44,16 @@
 #'
 #' tidy(rec_obj, number = 1)
 step_outliers_lookout <- function(
-                                  recipe,
-                                  ...,
-                                  role = NA,
-                                  trained = FALSE,
-                                  outlier_probability = NULL,
-                                  columns = NULL,
-                                  name_mutate = ".outliers_lookout",
-                                  options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
-                                  skip = TRUE,
-                                  id = rand_id("outliers_lookout")) {
+    recipe,
+    ...,
+    role = NA,
+    trained = FALSE,
+    outlier_probability = NULL,
+    columns = NULL,
+    name_mutate = ".outliers_lookout",
+    options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
+    skip = TRUE,
+    id = rand_id("outliers_lookout")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
