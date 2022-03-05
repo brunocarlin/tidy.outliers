@@ -70,6 +70,9 @@ test_that("tune wrorks", {
 
 # Test that custom functions work with tidymodels
 
+ames <- modeldata::ames
+
+
 rec_obj_tune <-
   recipe(Sale_Price ~ Lot_Frontage + Lot_Area, data = ames) %>%
   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
