@@ -97,7 +97,7 @@ workflow <- workflow() |>
   add_recipe(rec_obj_tune) |>
   add_model(lin_mod)
 
-tune_grid_result <- tune::tune_grid(workflow,resamples = rsample::vfold_cv(ames,2),grid =spline_grid)
+tune_grid_result <- tune_grid(workflow,resamples = vfold_cv(ames,2),grid =spline_grid)
 
 best_five <- tune_grid_result |> tune::show_best(metric = 'rmse')
 
