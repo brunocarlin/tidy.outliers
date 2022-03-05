@@ -1,10 +1,11 @@
-#' Calculate the [Mahalanobis][maha] outlier "probability"
+#' Calculate the Mahalanobis outlier "probability"
 #'
 #' `step_outliers_maha` creates a *specification* of a recipe
-#'  step that will calculate the probability of the row of selected columns being an outliers using [maha] from `OutlierDetection`.
+#'  step that will calculate the probability of the row of selected columns being an outliers using a the Mahalanobis distance.
 #'
 #' @keywords datagen
 #' @concept preprocessing
+#' @importFrom stats cov mahalanobis pchisq
 #' @inheritParams recipes::step_center
 #' @param ... One or more selector functions to choose which
 #'  variables will be transformed. See [selections()] for
@@ -12,12 +13,13 @@
 #'  currently used.
 #' @param role not defined for this function
 #' @param outlier_probability a placeholder for the exit of this function don't change
+#' @param columns A character string of variable names that will
+#'  be populated (eventually) by the terms argument.
 #' @param name_mutate the name of the generated column with maha probabilities
-#' @importFrom OutlierDetection maha
-#' @param options a list with cutoff point which is ignored and the rnames argument of the [maha] function
+#' @param options an empty list
 #' @return An updated version of `recipe` with the new step
 #'  added to the sequence of existing steps (if any), with the name on `name_mutate` and the probabilities calculated. For the
-#'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_probability` (the probabilites).
+#'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_probability` (the probabilities).
 #'
 #' @export
 #'
@@ -33,7 +35,6 @@
 #' @examples
 #' library(recipes)
 #' library(tidy.outliers)
-#' library(OutlierDetection)
 #' rec_obj <-
 #'   recipe(mpg ~ ., data = mtcars) %>%
 #'   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
@@ -43,22 +44,21 @@
 #'
 #' tidy(rec_obj, number = 1)
 step_outliers_maha <- function(
-                               recipe,
-                               ...,
-                               role = NA,
-                               trained = FALSE,
-                               outlier_probability = NULL,
-                               name_mutate = ".outliers_maha",
-                               options = list(cutoff = 0, rnames = FALSE),
-                               skip = TRUE,
-                               id = rand_id("outliers_maha")) {
+    recipe,
+    ...,
+    role = NA,
+    trained = FALSE,
+    outlier_probability = NULL,
+    columns = NULL,
+    name_mutate = ".outliers_maha",
+    options = list(),
+    skip = TRUE,
+    id = rand_id("outliers_maha")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
   ##  the values and also checks to make sure that they are not empty.
   terms <- ellipse_check(...)
-
-  recipes_pkg_check(required_pkgs.step_outliers_maha())
 
   add_step(
     recipe,
@@ -67,6 +67,7 @@ step_outliers_maha <- function(
       trained = trained,
       role = role,
       outlier_probability = outlier_probability,
+      columns = columns,
       name_mutate = name_mutate,
       options = options,
       skip = skip,
@@ -82,6 +83,7 @@ step_outliers_maha_new <-
            role,
            trained,
            outlier_probability,
+           columns,
            name_mutate,
            options,
            skip,
@@ -92,6 +94,7 @@ step_outliers_maha_new <-
       role = role,
       trained = trained,
       outlier_probability = outlier_probability,
+      columns = columns,
       name_mutate = name_mutate,
       options = options,
       skip = skip,
@@ -101,45 +104,58 @@ step_outliers_maha_new <-
 
 
 get_train_probability_maha <- function(x, args = NULL) {
-  args$cutoff <- 0
 
-  res <- rlang::exec("maha", x = x, !!!args)
+  maha=function(x)
+  {
 
-  res$`Outlier Probability`
+    data=as.data.frame(x)
+    Mean=colMeans(x)
+    Cov=cov(x)
+    m=mahalanobis(x,Mean,Cov)
+    p=pchisq(m,ncol(x))
+
+
+    return(p)
+
+  }
+
+
+  maha(x)
+
 }
 
 
 #' @export
 prep.step_outliers_maha <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(terms = x$terms, info = info)
+
+  col_names <- recipes_eval_select(x$terms, training, info)
   ## You can add error trapping for non-numeric data here and so on.
 
   check_type(training[, col_names])
 
 
-  # ## We'll use the names later so
-  # if (x$options$names == FALSE) {
-  #   rlang::abort("`names` should be set to TRUE")
-  # }
 
-  # if (!any(names(x$options) == "probs")) {
-  #   x$options$probs <- (0:100)/100
-  # } else {
-  #   x$options$probs <- sort(unique(x$options$probs))
-  # }
+  subset_to_check <- training[col_names]
+  nr_na <- colSums(is.na(subset_to_check))
+  if (any(nr_na > 0)) {
+    with_na <- names(nr_na[nr_na > 0])
+    with_na_str <- paste(paste0("`", with_na, "`"), collapse = ", ")
+    rlang::abort(paste0(
+      "The following columns contain missing values: ",
+      with_na_str, "."
+    ))
+  }
 
 
   outlier_probability <- training[, col_names] %>% get_train_probability_maha(args = x$options)
 
 
-  ## Use the constructor function to return the updated object.
-  ## Note that `trained` is now set to TRUE
-
   step_outliers_maha_new(
     terms = x$terms,
-    trained = TRUE,
     role = x$role,
+    trained = TRUE,
     outlier_probability = outlier_probability,
+    columns = col_names,
     name_mutate = x$name_mutate,
     options = x$options,
     skip = x$skip,
@@ -150,6 +166,7 @@ prep.step_outliers_maha <- function(x, training, info = NULL, ...) {
 
 #' @export
 bake.step_outliers_maha <- function(object, new_data, ...) {
+
   new_data[[object$name_mutate]] <- object$outlier_probability
 
   new_data
@@ -182,9 +199,4 @@ tidy.step_outliers_maha <- function(x, ...) {
   # Always return the step id:
   res$id <- x$id
   res
-}
-
-
-required_pkgs.step_outliers_maha <- function(x, ...) {
-  c("OutlierDetection")
 }

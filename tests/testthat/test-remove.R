@@ -1,6 +1,5 @@
 library(recipes)
 library(tidy.outliers)
-library(OutlierDetection)
 
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) %>%
@@ -12,10 +11,10 @@ juice_result <- juice(rec_obj)
 
 tidy_result <- tidy(rec_obj, number = 2)
 
-aggregation_results <- tidy_result$aggregation_results
+aggregation_results_tbl <- tidy_result$aggregation_results
 
 
-test_probabilities(aggregation_results)
+test_probabilities(aggregation_results_tbl)
 # Test Passed
 
 test_that("na values create an error", {
@@ -44,7 +43,7 @@ tidy_rec_obj_not_prep <-
   tidy(number = 1)
 
 test_that("tidy not prepped works", {
-  expect_equal(all(tidy_rec_obj_not_prep$aggregation_results == 0), expected = T)
+  expect_equal(all(tidy_rec_obj_not_prep$aggregation_results_tbl == 0), expected = T)
   expect_equal(all(tidy_rec_obj_not_prep$outliers == F), expected = T)
 })
 

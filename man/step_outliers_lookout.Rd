@@ -11,6 +11,7 @@ step_outliers_lookout(
   role = NA,
   trained = FALSE,
   outlier_probability = NULL,
+  columns = NULL,
   name_mutate = ".outliers_lookout",
   options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
   skip = TRUE,
@@ -35,16 +36,19 @@ preprocessing have been estimated.}
 
 \item{outlier_probability}{a placeholder for the exit of this function don't change}
 
+\item{columns}{A character string of variable names that will
+be populated (eventually) by the terms argument.}
+
 \item{name_mutate}{the name of the generated column with lookout probabilities}
 
-\item{options}{a list with alpha which is ignored, unitize which decides normalization, bw and gdp \link{lookout} function}
+\item{options}{a list with alpha, unitize which decides normalization, bw and gdp \link{lookout} function}
 
 \item{skip}{A logical. Should the step be skipped when the
-recipe is baked by \code{\link[recipes:bake]{bake.recipe()}}? While all operations are baked
-when \code{\link[recipes:prep]{prep.recipe()}} is run, some operations may not be able to be
+recipe is baked by \code{\link[recipes:bake]{bake()}}? While all operations are baked
+when \code{\link[recipes:prep]{prep()}} is run, some operations may not be able to be
 conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = TRUE} as it may affect
-the computations for subsequent operations}
+the computations for subsequent operations.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 
@@ -57,7 +61,7 @@ added to the sequence of existing steps (if any), with the name on \code{name_mu
 }
 \description{
 \code{step_outliers_lookout} creates a \emph{specification} of a recipe
-step that will calculate the probability of the row of selected columns being an outliers using \link{lookout} from \code{OutlierDetection}.
+step that will calculate the probability of the row of selected columns being an outliers using \link{lookout} from \code{lookout}.
 }
 \details{
 All columns in the data are sampled and returned by \code{\link[=juice]{juice()}}
@@ -72,7 +76,6 @@ conducted outside of the training set.
 \examples{
 library(recipes)
 library(tidy.outliers)
-library(OutlierDetection)
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) \%>\%
   step_outliers_lookout(all_numeric(), -all_outcomes()) \%>\%

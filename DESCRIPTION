@@ -16,17 +16,17 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 URL: https://github.com/brunocarlin/tidy.outliers
 BugReports: https://github.com/brunocarlin/tidy.outliers/issues
 Imports: 
     recipes,
-    OutlierDetection,
     tibble,
     rlang,
     lookout (>= 0.0.0.9000),
     tune,
     dials,
-    dplyr
+    dplyr,
+    stats
 Remotes: 
     sevvandi/lookout

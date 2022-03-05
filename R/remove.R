@@ -35,7 +35,6 @@
 #' @examples
 #' library(recipes)
 #' library(tidy.outliers)
-#' library(OutlierDetection)
 #' rec_obj <-
 #'   recipe(mpg ~ ., data = mtcars) %>%
 #'   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
@@ -120,7 +119,7 @@ get_outliers_combination <- function(x, aggregation_function, probability_dropou
 
 #' @export
 prep.step_outliers_remove <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(terms = x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms,training, info = info)
   ## You can add error trapping for non-numeric data here and so on.
 
   check_type(training[, col_names])

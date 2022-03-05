@@ -24,8 +24,11 @@ knitr::opts_chunk$set(
 
 The goal of tidy.outliers is to allow for easy usage of many outliers removal methods, I currently plan to implement at least:
 
-* all methods in the [OutlierDetection package](https://cran.r-project.org/web/packages/OutlierDetection/index.html)
-* method of the [lookout package](https://github.com/Sevvandi/lookout)
+
+-   the method on the [lookout package](https://github.com/Sevvandi/lookout)
+-   the maha distance method
+-   some other simple outlier detenctions such as IQR
+
 
 
 ## Installation
@@ -54,7 +57,6 @@ This is a basic example which shows you how to solve a common problem:
 ```{r libraries, echo=TRUE, warning=FALSE,message=FALSE}
 library(recipes)
 library(tidy.outliers)
-library(OutlierDetection)
 ```
 
 
@@ -62,9 +64,9 @@ library(OutlierDetection)
 
 ```{r recipe}
 rec_obj <-
-  recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
-  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) %>% 
+  recipe(mpg ~ ., data = mtcars) |>
+  step_outliers_maha(all_numeric(), -all_outcomes()) |>
+  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) |> 
   prep(mtcars)
 ```
 
@@ -72,9 +74,9 @@ rec_obj <-
 ### Investigate results
 
 ```{r juice}
-juice(rec_obj) %>% 
-  select(contains(r"(.outliers)")) %>% 
-  arrange(.outliers_lookout %>% desc())
+juice(rec_obj) |> 
+  select(contains(r"(.outliers)")) |> 
+  arrange(.outliers_lookout |> desc())
 ```
 
 ```{r tidy}
@@ -90,10 +92,10 @@ tidy(rec_obj,number = 2)
 
 ```{r recipe remove}
 rec_obj2 <-
-  recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
-  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) %>% 
-  step_outliers_remove(contains(r"(.outliers)")) %>% 
+  recipe(mpg ~ ., data = mtcars) |>
+  step_outliers_maha(all_numeric(), -all_outcomes()) |>
+  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) |> 
+  step_outliers_remove(contains(r"(.outliers)")) |> 
   prep(mtcars)
 ```
 
@@ -103,17 +105,17 @@ rec_obj2 <-
 We can see that the mtcars dataset got reduced by our function but way less than if we used just one function on this case
 
 ```{r juice remove}
-juice(rec_obj2) %>% glimpse()
+juice(rec_obj2) |> glimpse()
 ```
 ```{r}
-mtcars %>% glimpse()
+mtcars |> glimpse()
 ```
 
 And we can get which were the outliers and their probability
 
 ```{r tidy remove}
-tidy(rec_obj2,number = 3) %>% 
-  arrange(aggregation_results %>% desc())
+tidy(rec_obj2,number = 3) |> 
+  arrange(aggregation_results |> desc())
 ```
 
 ## Integration with tidymodels
@@ -129,8 +131,8 @@ library(tidymodels)
 data(ames)
 
 
-data_split <- ames %>%
-  mutate(Sale_Price = log10(Sale_Price)) %>%
+data_split <- ames |>
+  mutate(Sale_Price = log10(Sale_Price)) |>
   initial_split(strata = Sale_Price)
 ames_train <- training(data_split)
 ames_test  <- testing(data_split)
@@ -141,12 +143,12 @@ ames_test  <- testing(data_split)
 
 ```{r}
 ames_rec <- 
-  recipe(Sale_Price ~ Gr_Liv_Area + Longitude + Latitude, data = ames_train) %>% 
-  step_log(Gr_Liv_Area, base = 10) %>% 
-  step_ns(Longitude, deg_free = tune("long df")) %>% 
-  step_ns(Latitude,  deg_free = tune("lat df")) %>% 
-  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
-  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) %>% 
+  recipe(Sale_Price ~ Gr_Liv_Area + Longitude + Latitude, data = ames_train) |> 
+  step_log(Gr_Liv_Area, base = 10) |> 
+  step_ns(Longitude, deg_free = tune("long df")) |> 
+  step_ns(Latitude,  deg_free = tune("lat df")) |> 
+  step_outliers_maha(all_numeric(), -all_outcomes()) |>
+  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) |> 
   step_outliers_remove(contains(r"(.outliers)"),probability_dropout = tune("dropout"),aggregation_function = tune("aggregation"))
 
 ```
@@ -161,13 +163,13 @@ parameters(ames_rec)
 
 ```{r}
 ames_param <- 
-  ames_rec %>% 
-  parameters() %>% 
+  ames_rec |> 
+  parameters() |> 
   update(
     `long df` = spline_degree(), 
     `lat df` = spline_degree(),
     dropout = dropout(range = c(0.75, 1)),
-    aggregation = aggregation() %>% value_set(c("mean","weighted_mean"))
+    aggregation = aggregation() |> value_set(c("mean","weighted_mean"))
   )
 ```
 
@@ -193,7 +195,7 @@ spline_grid
 
 ```{r}
 lin_mod <-
-  linear_reg() %>%
+  linear_reg() |>
   set_engine("lm")
 ```
 
@@ -201,8 +203,8 @@ lin_mod <-
 
 ```{r}
 
-wf_tune <- workflow() %>%
-  add_recipe(ames_rec) %>% 
+wf_tune <- workflow() |>
+  add_recipe(ames_rec) |> 
   add_model(lin_mod)
 ```
 
@@ -226,8 +228,8 @@ ames_res <- tune_grid(wf_tune, resamples = cv_splits, grid = spline_grid)
 estimates <- collect_metrics(ames_res)
 
 rmse_vals <- 
-  estimates %>% 
-  dplyr::filter(.metric == "rmse") %>% 
+  estimates |> 
+  dplyr::filter(.metric == "rmse") |> 
   arrange(mean)
 rmse_vals
 ```

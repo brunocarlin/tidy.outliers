@@ -17,9 +17,9 @@ coverage](https://codecov.io/gh/brunocarlin/tidy.outliers/branch/master/graph/ba
 The goal of tidy.outliers is to allow for easy usage of many outliers
 removal methods, I currently plan to implement at least:
 
--   all methods in the [OutlierDetection
-    package](https://cran.r-project.org/web/packages/OutlierDetection/index.html)
--   method of the [lookout package](https://github.com/Sevvandi/lookout)
+-   the method on the [lookout package](https://github.com/Sevvandi/lookout)
+-   the maha distance method
+-   some other simple outlier detenctions such as IQR
 
 ## Installation
 
@@ -46,7 +46,6 @@ This is a basic example which shows you how to solve a common problem:
 ``` r
 library(recipes)
 library(tidy.outliers)
-library(OutlierDetection)
 ```
 
 ### Create recipe mutating probabilities

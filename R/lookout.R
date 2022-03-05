@@ -1,7 +1,7 @@
 #' Calculate the [lookout package][lookout] outlier "probability"
 #'
 #' `step_outliers_lookout` creates a *specification* of a recipe
-#'  step that will calculate the probability of the row of selected columns being an outliers using [lookout] from `OutlierDetection`.
+#'  step that will calculate the probability of the row of selected columns being an outliers using [lookout] from `lookout`.
 #'
 #' @keywords datagen
 #' @concept preprocessing
@@ -12,9 +12,11 @@
 #'  currently used.
 #' @param role not defined for this function
 #' @param outlier_probability a placeholder for the exit of this function don't change
+#' @param columns A character string of variable names that will
+#'  be populated (eventually) by the terms argument.
 #' @param name_mutate the name of the generated column with lookout probabilities
 #' @importFrom lookout lookout
-#' @param options a list with alpha which is ignored, unitize which decides normalization, bw and gdp [lookout] function
+#' @param options a list with alpha, unitize which decides normalization, bw and gdp [lookout] function
 #' @return An updated version of `recipe` with the new step
 #'  added to the sequence of existing steps (if any), with the name on `name_mutate` and the probabilities calculated. For the
 #'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_probability` (the probabilites).
@@ -33,7 +35,6 @@
 #' @examples
 #' library(recipes)
 #' library(tidy.outliers)
-#' library(OutlierDetection)
 #' rec_obj <-
 #'   recipe(mpg ~ ., data = mtcars) %>%
 #'   step_outliers_lookout(all_numeric(), -all_outcomes()) %>%
@@ -48,6 +49,7 @@ step_outliers_lookout <- function(
                                   role = NA,
                                   trained = FALSE,
                                   outlier_probability = NULL,
+                                  columns = NULL,
                                   name_mutate = ".outliers_lookout",
                                   options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
                                   skip = TRUE,
@@ -67,6 +69,7 @@ step_outliers_lookout <- function(
       trained = trained,
       role = role,
       outlier_probability = outlier_probability,
+      columns = columns,
       name_mutate = name_mutate,
       options = options,
       skip = skip,
@@ -82,6 +85,7 @@ step_outliers_lookout_new <-
            role,
            trained,
            outlier_probability,
+           columns,
            name_mutate,
            options,
            skip,
@@ -92,6 +96,7 @@ step_outliers_lookout_new <-
       role = role,
       trained = trained,
       outlier_probability = outlier_probability,
+      columns = columns,
       name_mutate = name_mutate,
       options = options,
       skip = skip,
@@ -113,22 +118,21 @@ get_train_probability_lookout <- function(x, args = NULL) {
 
 #' @export
 prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
-  col_names <- terms_select(terms = x$terms, info = info)
+  col_names <- recipes_eval_select(x$terms,training, info = info)
   ## You can add error trapping for non-numeric data here and so on.
 
   check_type(training[, col_names])
 
-
-  # ## We'll use the names later so
-  # if (x$options$names == FALSE) {
-  #   rlang::abort("`names` should be set to TRUE")
-  # }
-
-  # if (!any(names(x$options) == "probs")) {
-  #   x$options$probs <- (0:100)/100
-  # } else {
-  #   x$options$probs <- sort(unique(x$options$probs))
-  # }
+  subset_to_check <- training[col_names]
+  nr_na <- colSums(is.na(subset_to_check))
+  if (any(nr_na > 0)) {
+    with_na <- names(nr_na[nr_na > 0])
+    with_na_str <- paste(paste0("`", with_na, "`"), collapse = ", ")
+    rlang::abort(paste0(
+      "The following columns contain missing values: ",
+      with_na_str, "."
+    ))
+  }
 
 
   outlier_probability <- training[, col_names] %>% get_train_probability_lookout(args = x$options)
@@ -142,6 +146,7 @@ prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
     trained = TRUE,
     role = x$role,
     outlier_probability = outlier_probability,
+    columns = col_names,
     name_mutate = x$name_mutate,
     options = x$options,
     skip = x$skip,
@@ -152,6 +157,7 @@ prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
 
 #' @export
 bake.step_outliers_lookout <- function(object, new_data, ...) {
+
   new_data[[object$name_mutate]] <- object$outlier_probability
 
   new_data

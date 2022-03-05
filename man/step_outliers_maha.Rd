@@ -3,7 +3,7 @@
 \name{step_outliers_maha}
 \alias{step_outliers_maha}
 \alias{tidy.step_outliers_maha}
-\title{Calculate the \link[=maha]{Mahalanobis} outlier "probability"}
+\title{Calculate the Mahalanobis outlier "probability"}
 \usage{
 step_outliers_maha(
   recipe,
@@ -11,8 +11,9 @@ step_outliers_maha(
   role = NA,
   trained = FALSE,
   outlier_probability = NULL,
+  columns = NULL,
   name_mutate = ".outliers_maha",
-  options = list(cutoff = 0, rnames = FALSE),
+  options = list(),
   skip = TRUE,
   id = rand_id("outliers_maha")
 )
@@ -35,16 +36,19 @@ preprocessing have been estimated.}
 
 \item{outlier_probability}{a placeholder for the exit of this function don't change}
 
+\item{columns}{A character string of variable names that will
+be populated (eventually) by the terms argument.}
+
 \item{name_mutate}{the name of the generated column with maha probabilities}
 
-\item{options}{a list with cutoff point which is ignored and the rnames argument of the \link{maha} function}
+\item{options}{an empty list}
 
 \item{skip}{A logical. Should the step be skipped when the
-recipe is baked by \code{\link[recipes:bake]{bake.recipe()}}? While all operations are baked
-when \code{\link[recipes:prep]{prep.recipe()}} is run, some operations may not be able to be
+recipe is baked by \code{\link[recipes:bake]{bake()}}? While all operations are baked
+when \code{\link[recipes:prep]{prep()}} is run, some operations may not be able to be
 conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using \code{skip = TRUE} as it may affect
-the computations for subsequent operations}
+the computations for subsequent operations.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 
@@ -53,11 +57,11 @@ the computations for subsequent operations}
 \value{
 An updated version of \code{recipe} with the new step
 added to the sequence of existing steps (if any), with the name on \code{name_mutate} and the probabilities calculated. For the
-\code{tidy} method, a tibble with columns \code{index} (the row indexes of the tibble) and \code{outlier_probability} (the probabilites).
+\code{tidy} method, a tibble with columns \code{index} (the row indexes of the tibble) and \code{outlier_probability} (the probabilities).
 }
 \description{
 \code{step_outliers_maha} creates a \emph{specification} of a recipe
-step that will calculate the probability of the row of selected columns being an outliers using \link{maha} from \code{OutlierDetection}.
+step that will calculate the probability of the row of selected columns being an outliers using a the Mahalanobis distance.
 }
 \details{
 All columns in the data are sampled and returned by \code{\link[=juice]{juice()}}
@@ -72,7 +76,6 @@ conducted outside of the training set.
 \examples{
 library(recipes)
 library(tidy.outliers)
-library(OutlierDetection)
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) \%>\%
   step_outliers_maha(all_numeric(), -all_outcomes()) \%>\%
