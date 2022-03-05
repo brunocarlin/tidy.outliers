@@ -90,6 +90,7 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/brunocarlin/tidy.outliers" class="external-link">tidy.outliers</a></span><span class="op">)</span></code></pre></div>
+<p>The most central aspect of tidy.outliers is to combine it on a workflow to filter outliers out of your training dataset, and to consider the outlier removal process just one of your many dials controlled hyper parameters, you can even ‘pool’ the score out of multiple outlier methods!</p>
 <div class="section level2">
 <h2 id="load-tidymodels">Load tidymodels<a class="anchor" aria-label="anchor" href="#load-tidymodels"></a>
 </h2>
@@ -166,26 +167,26 @@
 <span class="co">#&gt; <span style="color: #949494;"># A tibble: 20 × 4</span></span>
 <span class="co">#&gt;    `long df` `lat df` dropout aggregation  </span>
 <span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>         8       10   0.788 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>         1        4   0.859 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>         1        7   0.987 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         4        5   0.908 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         7        6   0.829 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         9        9   0.932 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         5        1   0.843 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         1        7   0.821 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         8        8   0.758 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>         5        9   0.987 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">11</span>        10        2   0.819 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">12</span>        10       10   0.912 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">13</span>         1        3   0.984 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">14</span>         5        8   0.851 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">15</span>         5        5   0.919 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">16</span>         4       10   0.760 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">17</span>         4        5   0.771 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">18</span>         9        5   0.911 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">19</span>         3        1   0.953 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">20</span>         2        9   0.987 weighted_mean</span></code></pre></div>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>         7        2   0.765 weighted_mean</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>         3        8   0.757 weighted_mean</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>         2        2   0.760 weighted_mean</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         9        4   0.769 mean         </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         1        3   0.776 mean         </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         1        2   0.852 mean         </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         1        6   0.943 weighted_mean</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>        10        6   0.853 weighted_mean</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         3        8   0.765 mean         </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>         3        4   0.856 weighted_mean</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">11</span>         1       10   0.901 weighted_mean</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">12</span>         7        8   0.820 weighted_mean</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">13</span>         8        3   0.900 mean         </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">14</span>        10        5   0.991 mean         </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">15</span>         2        9   0.968 mean         </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">16</span>        10       10   0.765 mean         </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">17</span>         4        4   0.928 mean         </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">18</span>         6        9   0.979 weighted_mean</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">19</span>         7        5   0.964 weighted_mean</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">20</span>         8        9   0.922 mean</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="create-a-simple-model">Create a simple model<a class="anchor" aria-label="anchor" href="#create-a-simple-model"></a>
@@ -228,26 +229,26 @@
 <span class="co">#&gt; <span style="color: #949494;"># A tibble: 20 × 10</span></span>
 <span class="co">#&gt;    `long df` `lat df` dropout aggregation   .metric .estimator   mean     n</span>
 <span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>         9        9   0.932 weighted_mean rmse    standard   0.094<span style="text-decoration: underline;">9</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>        10       10   0.912 mean          rmse    standard   0.095<span style="text-decoration: underline;">0</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>         8       10   0.788 mean          rmse    standard   0.095<span style="text-decoration: underline;">1</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         8        8   0.758 weighted_mean rmse    standard   0.095<span style="text-decoration: underline;">1</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         5        9   0.987 mean          rmse    standard   0.095<span style="text-decoration: underline;">7</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         5        8   0.851 weighted_mean rmse    standard   0.095<span style="text-decoration: underline;">8</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         2        9   0.987 weighted_mean rmse    standard   0.096<span style="text-decoration: underline;">3</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         4       10   0.760 mean          rmse    standard   0.096<span style="text-decoration: underline;">4</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         9        5   0.911 mean          rmse    standard   0.097<span style="text-decoration: underline;">3</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>         5        5   0.919 weighted_mean rmse    standard   0.097<span style="text-decoration: underline;">8</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">11</span>         7        6   0.829 mean          rmse    standard   0.098<span style="text-decoration: underline;">2</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">12</span>         1        7   0.987 mean          rmse    standard   0.098<span style="text-decoration: underline;">4</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">13</span>         1        7   0.821 weighted_mean rmse    standard   0.098<span style="text-decoration: underline;">5</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">14</span>         4        5   0.908 mean          rmse    standard   0.098<span style="text-decoration: underline;">7</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">15</span>        10        2   0.819 mean          rmse    standard   0.098<span style="text-decoration: underline;">9</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">16</span>         1        3   0.984 mean          rmse    standard   0.099<span style="text-decoration: underline;">5</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">17</span>         4        5   0.771 mean          rmse    standard   0.099<span style="text-decoration: underline;">9</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">18</span>         1        4   0.859 weighted_mean rmse    standard   0.100      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">19</span>         5        1   0.843 weighted_mean rmse    standard   0.108      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">20</span>         3        1   0.953 weighted_mean rmse    standard   0.112      5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>         6        9   0.979 weighted_mean rmse    standard   0.096<span style="text-decoration: underline;">3</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>         8        9   0.922 mean          rmse    standard   0.096<span style="text-decoration: underline;">3</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>        10       10   0.765 mean          rmse    standard   0.096<span style="text-decoration: underline;">3</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         2        9   0.968 mean          rmse    standard   0.096<span style="text-decoration: underline;">5</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         1       10   0.901 weighted_mean rmse    standard   0.096<span style="text-decoration: underline;">5</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         7        8   0.820 weighted_mean rmse    standard   0.096<span style="text-decoration: underline;">8</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         3        8   0.765 mean          rmse    standard   0.096<span style="text-decoration: underline;">8</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         3        8   0.757 weighted_mean rmse    standard   0.097<span style="text-decoration: underline;">0</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>        10        5   0.991 mean          rmse    standard   0.098<span style="text-decoration: underline;">3</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>        10        6   0.853 weighted_mean rmse    standard   0.098<span style="text-decoration: underline;">4</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">11</span>         7        5   0.964 weighted_mean rmse    standard   0.098<span style="text-decoration: underline;">7</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">12</span>         1        6   0.943 weighted_mean rmse    standard   0.098<span style="text-decoration: underline;">7</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">13</span>         8        3   0.900 mean          rmse    standard   0.099<span style="text-decoration: underline;">3</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">14</span>         9        4   0.769 mean          rmse    standard   0.099<span style="text-decoration: underline;">3</span>     5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">15</span>         4        4   0.928 mean          rmse    standard   0.100      5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">16</span>         1        2   0.852 mean          rmse    standard   0.101      5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">17</span>         2        2   0.760 weighted_mean rmse    standard   0.101      5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">18</span>         7        2   0.765 weighted_mean rmse    standard   0.102      5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">19</span>         3        4   0.856 weighted_mean rmse    standard   0.103      5</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">20</span>         1        3   0.776 mean          rmse    standard   0.104      5</span>
 <span class="co">#&gt; <span style="color: #949494;"># … with 2 more variables: std_err &lt;dbl&gt;, .config &lt;chr&gt;</span></span></code></pre></div>
 </div>
 <div class="section level2">
