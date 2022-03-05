@@ -27,11 +27,15 @@ The goal of tidy.outliers is to allow for easy usage of many outliers removal me
 
 -   the method on the [lookout package](https://github.com/Sevvandi/lookout)
 -   the maha distance method
--   some other simple outlier detenctions such as IQR
+-   some other simple outlier detection such as using IQR
 
 
+# What are outlier scores?
 
-## Installation
+The package functions on the principal that all basic step_outlier_* functions return an outlier "score" that can be used for filtering out outlier where 0 is a very low outlier score and 1 is a very high outlier score, so you could filter, for example all rows where the outlier score is greater than .9.
+
+
+# Installation
 
 You can not yet install the released version of tidy.outliers from [CRAN](https://CRAN.R-project.org) with:
 
@@ -47,12 +51,9 @@ And the development version from GitHub with:
 ```
 
 
-## Example Mutation
+# Usage
 
-This is a basic example which shows you how to solve a common problem:
-
-
-### Load Libraries
+## Load Libraries
 
 ```{r libraries, echo=TRUE, warning=FALSE,message=FALSE}
 library(recipes)
@@ -60,7 +61,9 @@ library(tidy.outliers)
 ```
 
 
-### Create recipe mutating probabilities
+## Create a recipe for calculation the outlier scores
+
+I keep the mpg as an example outcome since you should remove outlier from your outcome, you also shouldn't remove outlier from testing data so the default is to skip the steps of the package when predicting.
 
 ```{r recipe}
 rec_obj <-
@@ -71,24 +74,25 @@ rec_obj <-
 ```
 
 
-### Investigate results
+## Return scores
 
 ```{r juice}
 juice(rec_obj) |> 
   select(contains(r"(.outliers)")) |> 
   arrange(.outliers_lookout |> desc())
 ```
+## Get step id's
 
 ```{r tidy}
-tidy(rec_obj,number = 1)
+tidy(rec_obj,number = 1)$id |> unique()
 ```
 ```{r tidy2}
-tidy(rec_obj,number = 2)
+tidy(rec_obj,number = 2)$id |> unique()
 ```
 
-## Example filtering
+# Example filtering based on scores
 
-### Create recipe filtering outliers
+## Create recipe filtering outliers
 
 ```{r recipe remove}
 rec_obj2 <-
@@ -100,9 +104,9 @@ rec_obj2 <-
 ```
 
 
-### Investigate results 
+## Returns the filtered rows 
 
-We can see that the mtcars dataset got reduced by our function but way less than if we used just one function on this case
+We filtered one row from the dataset and and automatically removed the extra outlier columns.
 
 ```{r juice remove}
 juice(rec_obj2) |> glimpse()
@@ -111,131 +115,15 @@ juice(rec_obj2) |> glimpse()
 mtcars |> glimpse()
 ```
 
-And we can get which were the outliers and their probability
+## Investigate why some rows were filtered
+
+And we can get which were the outliers and their score
 
 ```{r tidy remove}
 tidy(rec_obj2,number = 3) |> 
   arrange(aggregation_results |> desc())
 ```
 
-## Integration with tidymodels
+# Integration with tidymodels
 
-### Load tidymodels
-
-```{r echo=TRUE, warning=FALSE,message=FALSE }
-library(tidymodels)
-```
-
-### Get data
-```{r}
-data(ames)
-
-
-data_split <- ames |>
-  mutate(Sale_Price = log10(Sale_Price)) |>
-  initial_split(strata = Sale_Price)
-ames_train <- training(data_split)
-ames_test  <- testing(data_split)
-```
-
-
-### create the recipe
-
-```{r}
-ames_rec <- 
-  recipe(Sale_Price ~ Gr_Liv_Area + Longitude + Latitude, data = ames_train) |> 
-  step_log(Gr_Liv_Area, base = 10) |> 
-  step_ns(Longitude, deg_free = tune("long df")) |> 
-  step_ns(Latitude,  deg_free = tune("lat df")) |> 
-  step_outliers_maha(all_numeric(), -all_outcomes()) |>
-  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) |> 
-  step_outliers_remove(contains(r"(.outliers)"),probability_dropout = tune("dropout"),aggregation_function = tune("aggregation"))
-
-```
-
-### See the parameters
-
-```{r}
-parameters(ames_rec)
-```
-
-### There is already a function for dropouts implemented by dials
-
-```{r}
-ames_param <- 
-  ames_rec |> 
-  parameters() |> 
-  update(
-    `long df` = spline_degree(), 
-    `lat df` = spline_degree(),
-    dropout = dropout(range = c(0.75, 1)),
-    aggregation = aggregation() |> value_set(c("mean","weighted_mean"))
-  )
-```
-
-## Create weighted_mean func
-
-```{r}
-weighted_mean <- function(x) {
-  x[[1]] * .75 + x[[2]] * .25
-}
-```
-
-
-### Grid Search picks random points
-
-```{r}
-spline_grid <- grid_max_entropy(ames_param, size = 20)
-spline_grid
-```
-
-
-
-### create a simple model
-
-```{r}
-lin_mod <-
-  linear_reg() |>
-  set_engine("lm")
-```
-
-### create a simple workflow   
-
-```{r}
-
-wf_tune <- workflow() |>
-  add_recipe(ames_rec) |> 
-  add_model(lin_mod)
-```
-
-### create training folds
-
-```{r}
-set.seed(2453)
-cv_splits <- vfold_cv(ames_train, v = 5, strata = Sale_Price)
-```
-
-
-### Tune the grid
-
-```{r calculate grid, echo=TRUE, warning=FALSE,message=FALSE}
-ames_res <- tune_grid(wf_tune, resamples = cv_splits, grid = spline_grid)
-```
-
-
-```{r}
-
-estimates <- collect_metrics(ames_res)
-
-rmse_vals <- 
-  estimates |> 
-  dplyr::filter(.metric == "rmse") |> 
-  arrange(mean)
-rmse_vals
-```
-
-## Plot it
-
-```{r}
-autoplot(ames_res,metric = "rmse")
-```
+The package was made to play nice with tune and friends from tidymodels check out the article on our page!

@@ -1,25 +1,22 @@
-#' Calculate the [lookout package][lookout] outlier "probability"
+#' Calculate the [lookout package][lookout] outlier "score"
 #'
 #' `step_outliers_lookout` creates a *specification* of a recipe
-#'  step that will calculate the probability of the row of selected columns being an outliers using [lookout] from `lookout`.
+#'  step that will calculate the outlier score using [lookout] from `lookout` and inverting the results.
 #'
 #' @keywords datagen
 #' @concept preprocessing
 #' @inheritParams recipes::step_center
-#' @param ... One or more selector functions to choose which
-#'  variables will be transformed. See [selections()] for
-#'  more details. For the `tidy` method, these are not
-#'  currently used.
 #' @param role not defined for this function
-#' @param outlier_probability a placeholder for the exit of this function don't change
+#' @param outlier_score a placeholder for the exit of this function don't change
 #' @param columns A character string of variable names that will
 #'  be populated (eventually) by the terms argument.
 #' @param name_mutate the name of the generated column with lookout probabilities
 #' @importFrom lookout lookout
-#' @param options a list with alpha, unitize which decides normalization, bw and gdp [lookout] function
+#' @param options a list with alpha, unitize which decides normalization, bw and gdp [lookout] function.
+#' @param invert_results controler to transform the original [lookout] function result to an outlier score.
 #' @return An updated version of `recipe` with the new step
 #'  added to the sequence of existing steps (if any), with the name on `name_mutate` and the probabilities calculated. For the
-#'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_probability` (the probabilites).
+#'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_score` (the probabilites).
 #'
 #' @export
 #'
@@ -48,10 +45,11 @@ step_outliers_lookout <- function(
     ...,
     role = NA,
     trained = FALSE,
-    outlier_probability = NULL,
+    outlier_score = NULL,
     columns = NULL,
     name_mutate = ".outliers_lookout",
     options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
+    invert_results = FALSE,
     skip = TRUE,
     id = rand_id("outliers_lookout")) {
 
@@ -68,10 +66,11 @@ step_outliers_lookout <- function(
       terms = terms,
       trained = trained,
       role = role,
-      outlier_probability = outlier_probability,
+      outlier_score = outlier_score,
       columns = columns,
       name_mutate = name_mutate,
       options = options,
+      invert_results = invert_results,
       skip = skip,
       id = id
     )
@@ -84,10 +83,11 @@ step_outliers_lookout_new <-
   function(terms,
            role,
            trained,
-           outlier_probability,
+           outlier_score,
            columns,
            name_mutate,
            options,
+           invert_results,
            skip,
            id) {
     step(
@@ -95,24 +95,25 @@ step_outliers_lookout_new <-
       terms = terms,
       role = role,
       trained = trained,
-      outlier_probability = outlier_probability,
+      outlier_score = outlier_score,
       columns = columns,
       name_mutate = name_mutate,
       options = options,
+      invert_results = invert_results,
       skip = skip,
       id = id
     )
   }
 
 
-get_train_probability_lookout <- function(x, args = NULL) {
-  res <- rlang::exec("lookout", X = x, !!!args)
+get_train_score_lookout <- function(x, args = NULL,invert_results = TRUE) {
+  res <- rlang::exec("lookout", X = x, !!!args)$`outlier_score`
 
-  invert_prob <- function(vector_probs) {
-    (vector_probs - 1) * -1
+  if (invert_results) {
+   res <- (res - 1) * -1
   }
 
-  invert_prob(res$`outlier_probability`)
+  return(res)
 }
 
 
@@ -135,7 +136,7 @@ prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
   }
 
 
-  outlier_probability <- training[, col_names] %>% get_train_probability_lookout(args = x$options)
+  outlier_score <- training[, col_names] %>% get_train_score_lookout(args = x$options,invert_results = x$invert_results)
 
 
   ## Use the constructor function to return the updated object.
@@ -145,10 +146,11 @@ prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
     terms = x$terms,
     trained = TRUE,
     role = x$role,
-    outlier_probability = outlier_probability,
+    outlier_score = outlier_score,
     columns = col_names,
     name_mutate = x$name_mutate,
     options = x$options,
+    invert_results = x$invert_results,
     skip = x$skip,
     id = x$id
   )
@@ -158,17 +160,17 @@ prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
 #' @export
 bake.step_outliers_lookout <- function(object, new_data, ...) {
 
-  new_data[[object$name_mutate]] <- object$outlier_probability
+  new_data[[object$name_mutate]] <- object$outlier_score
 
   new_data
 }
 
 
 format_prob <- function(step_outlier) {
-  x <- step_outlier$outlier_probability
+  x <- step_outlier$outlier_score
   tibble::tibble(
     index = seq_len(length(x)),
-    outlier_probability = x
+    outlier_score = x
   )
 }
 
@@ -183,7 +185,7 @@ tidy.step_outliers_lookout <- function(x, ...) {
     res <-
       tibble(
         index = seq_len(length(x)),
-        outlier_probability = rlang::na_dbl
+        outlier_score = rlang::na_dbl
       )
   }
 

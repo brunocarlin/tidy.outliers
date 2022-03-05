@@ -3,14 +3,14 @@
 \name{step_outliers_maha}
 \alias{step_outliers_maha}
 \alias{tidy.step_outliers_maha}
-\title{Calculate the Mahalanobis outlier "probability"}
+\title{Calculate the Mahalanobis outlier "score"}
 \usage{
 step_outliers_maha(
   recipe,
   ...,
   role = NA,
   trained = FALSE,
-  outlier_probability = NULL,
+  outlier_score = NULL,
   columns = NULL,
   name_mutate = ".outliers_maha",
   options = list(),
@@ -34,7 +34,7 @@ currently used.}
 \item{trained}{A logical to indicate if the quantities for
 preprocessing have been estimated.}
 
-\item{outlier_probability}{a placeholder for the exit of this function don't change}
+\item{outlier_score}{a placeholder for the exit of this function don't change}
 
 \item{columns}{A character string of variable names that will
 be populated (eventually) by the terms argument.}
@@ -57,11 +57,12 @@ the computations for subsequent operations.}
 \value{
 An updated version of \code{recipe} with the new step
 added to the sequence of existing steps (if any), with the name on \code{name_mutate} and the probabilities calculated. For the
-\code{tidy} method, a tibble with columns \code{index} (the row indexes of the tibble) and \code{outlier_probability} (the probabilities).
+\code{tidy} method, a tibble with columns \code{index} (the row indexes of the tibble) and \code{outlier_score} (the probabilities).
 }
 \description{
 \code{step_outliers_maha} creates a \emph{specification} of a recipe
-step that will calculate the probability of the row of selected columns being an outliers using a the Mahalanobis distance.
+step that will calculate the outlier score using the
+Chisquare distribution \code{\link[stats:Chisquare]{stats::pchisq()}} of the Mahalanobis \code{\link[stats:mahalanobis]{stats::mahalanobis()}} distances.
 }
 \details{
 All columns in the data are sampled and returned by \code{\link[=juice]{juice()}}

@@ -1,7 +1,8 @@
-#' Calculate the Mahalanobis outlier "probability"
+#' Calculate the Mahalanobis outlier "score"
 #'
 #' `step_outliers_maha` creates a *specification* of a recipe
-#'  step that will calculate the probability of the row of selected columns being an outliers using a the Mahalanobis distance.
+#'  step that will calculate the outlier score using the
+#'  Chisquare distribution [stats::pchisq()] of the Mahalanobis [stats::mahalanobis()] distances.
 #'
 #' @keywords datagen
 #' @concept preprocessing
@@ -12,14 +13,14 @@
 #'  more details. For the `tidy` method, these are not
 #'  currently used.
 #' @param role not defined for this function
-#' @param outlier_probability a placeholder for the exit of this function don't change
+#' @param outlier_score a placeholder for the exit of this function don't change
 #' @param columns A character string of variable names that will
 #'  be populated (eventually) by the terms argument.
 #' @param name_mutate the name of the generated column with maha probabilities
 #' @param options an empty list
 #' @return An updated version of `recipe` with the new step
 #'  added to the sequence of existing steps (if any), with the name on `name_mutate` and the probabilities calculated. For the
-#'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_probability` (the probabilities).
+#'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_score` (the probabilities).
 #'
 #' @export
 #'
@@ -48,7 +49,7 @@ step_outliers_maha <- function(
     ...,
     role = NA,
     trained = FALSE,
-    outlier_probability = NULL,
+    outlier_score = NULL,
     columns = NULL,
     name_mutate = ".outliers_maha",
     options = list(),
@@ -66,7 +67,7 @@ step_outliers_maha <- function(
       terms = terms,
       trained = trained,
       role = role,
-      outlier_probability = outlier_probability,
+      outlier_score = outlier_score,
       columns = columns,
       name_mutate = name_mutate,
       options = options,
@@ -82,7 +83,7 @@ step_outliers_maha_new <-
   function(terms,
            role,
            trained,
-           outlier_probability,
+           outlier_score,
            columns,
            name_mutate,
            options,
@@ -93,7 +94,7 @@ step_outliers_maha_new <-
       terms = terms,
       role = role,
       trained = trained,
-      outlier_probability = outlier_probability,
+      outlier_score = outlier_score,
       columns = columns,
       name_mutate = name_mutate,
       options = options,
@@ -103,17 +104,12 @@ step_outliers_maha_new <-
   }
 
 
-get_train_probability_maha <- function(x, args = NULL) {
+get_train_score_maha <- function(x, args = NULL) {
 
   maha=function(x)
   {
-
-    data=as.data.frame(x)
-    Mean=colMeans(x)
-    Cov=cov(x)
-    m=mahalanobis(x,Mean,Cov)
+    m=mahalanobis(x,colMeans(x),cov(x))
     p=pchisq(m,ncol(x))
-
 
     return(p)
 
@@ -147,14 +143,14 @@ prep.step_outliers_maha <- function(x, training, info = NULL, ...) {
   }
 
 
-  outlier_probability <- training[, col_names] %>% get_train_probability_maha(args = x$options)
+  outlier_score <- training[, col_names] %>% get_train_score_maha(args = x$options)
 
 
   step_outliers_maha_new(
     terms = x$terms,
     role = x$role,
     trained = TRUE,
-    outlier_probability = outlier_probability,
+    outlier_score = outlier_score,
     columns = col_names,
     name_mutate = x$name_mutate,
     options = x$options,
@@ -167,17 +163,17 @@ prep.step_outliers_maha <- function(x, training, info = NULL, ...) {
 #' @export
 bake.step_outliers_maha <- function(object, new_data, ...) {
 
-  new_data[[object$name_mutate]] <- object$outlier_probability
+  new_data[[object$name_mutate]] <- object$outlier_score
 
   new_data
 }
 
 
 format_prob <- function(step_outlier) {
-  x <- step_outlier$outlier_probability
+  x <- step_outlier$outlier_score
   tibble::tibble(
     index = seq_len(length(x)),
-    outlier_probability = x
+    outlier_score = x
   )
 }
 
@@ -192,7 +188,7 @@ tidy.step_outliers_maha <- function(x, ...) {
     res <-
       tibble(
         index = seq_len(length(x)),
-        outlier_probability = rlang::na_dbl
+        outlier_score = rlang::na_dbl
       )
   }
 

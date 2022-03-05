@@ -1,0 +1,135 @@
+---
+title: "Integration with Tidymodel: Tune and Friends"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(tidy.outliers)
+```
+
+
+# Load tidymodels
+
+```{r echo=TRUE, warning=FALSE,message=FALSE }
+library(tidymodels)
+```
+
+# Get data
+```{r}
+data(ames)
+
+
+data_split <- ames |>
+  mutate(Sale_Price = log10(Sale_Price)) |>
+  initial_split(strata = Sale_Price)
+ames_train <- training(data_split)
+ames_test  <- testing(data_split)
+```
+
+
+# Create the recipe
+
+```{r}
+ames_rec <- 
+  recipe(Sale_Price ~ Gr_Liv_Area + Longitude + Latitude, data = ames_train) |> 
+  step_log(Gr_Liv_Area, base = 10) |> 
+  step_ns(Longitude, deg_free = tune("long df")) |> 
+  step_ns(Latitude,  deg_free = tune("lat df")) |> 
+  step_outliers_maha(all_numeric(), -all_outcomes()) |>
+  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) |> 
+  step_outliers_remove(contains(r"(.outliers)"),score_dropout = tune("dropout"),aggregation_function = tune("aggregation"))
+
+```
+
+# See the parameters
+
+```{r}
+parameters(ames_rec)
+```
+
+# There is already a function for dropouts implemented by dials
+
+```{r}
+ames_param <- 
+  ames_rec |> 
+  parameters() |> 
+  update(
+    `long df` = spline_degree(), 
+    `lat df` = spline_degree(),
+    dropout = dropout(range = c(0.75, 1)),
+    aggregation = aggregation() |> value_set(c("mean","weighted_mean"))
+  )
+```
+
+# Create weighted_mean func
+
+```{r}
+weighted_mean <- function(x) {
+  x[[1]] * .75 + x[[2]] * .25
+}
+```
+
+
+# Grid Search picks random points
+
+```{r}
+spline_grid <- grid_max_entropy(ames_param, size = 20)
+spline_grid
+```
+
+
+
+# Create a simple model
+
+```{r}
+lin_mod <-
+  linear_reg() |>
+  set_engine("lm")
+```
+
+# Create a simple workflow   
+
+```{r}
+
+wf_tune <- workflow() |>
+  add_recipe(ames_rec) |> 
+  add_model(lin_mod)
+```
+
+# Create training folds
+
+```{r}
+set.seed(2453)
+cv_splits <- vfold_cv(ames_train, v = 5, strata = Sale_Price)
+```
+
+
+# Tune the grid
+
+```{r calculate grid, echo=TRUE, warning=FALSE,message=FALSE}
+ames_res <- tune_grid(wf_tune, resamples = cv_splits, grid = spline_grid)
+```
+
+
+```{r}
+
+estimates <- collect_metrics(ames_res)
+
+rmse_vals <- 
+  estimates |> 
+  dplyr::filter(.metric == "rmse") |> 
+  arrange(mean)
+rmse_vals
+```
+
+# Plot it
+
+```{r}
+autoplot(ames_res,metric = "rmse")
+```

@@ -14,7 +14,7 @@ tidy_result <- tidy(rec_obj, number = 2)
 aggregation_results_tbl <- tidy_result$aggregation_results
 
 
-test_probabilities(aggregation_results_tbl)
+test_scores(aggregation_results_tbl)
 # Test Passed
 
 test_that("na values create an error", {
@@ -51,14 +51,14 @@ test_that("tidy not prepped works", {
 rec_obj_tune <-
   recipe(mpg ~ ., data = mtcars) %>%
   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
-  step_outliers_remove(contains(r"(.outliers)"), probability_dropout = tune("dropout"))
+  step_outliers_remove(contains(r"(.outliers)"), score_dropout = tune("dropout"))
 
 
 rec_param <- tunable(rec_obj_tune)
 
 
 test_that("tune wrorks", {
-  expect_equal(rec_param$name, c("probability_dropout","aggregation_function"))
+  expect_equal(rec_param$name, c("score_dropout","aggregation_function"))
   expect_true(all(rec_param$source == "recipe"))
   expect_true(is.list(rec_param$call_info))
   expect_equal(nrow(rec_param), 2)

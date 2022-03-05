@@ -1,0 +1,49 @@
+---
+title: "Getting outlier Score"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(dplyr)
+library(tidy.outliers)
+library(recipes)
+```
+
+One of the most import aspects of tidyoutliers may be that you want to model something directly using the outlier score, that is pretty easy to do
+
+# Mahalanobis Score
+
+Prep your recipe.
+
+```{r}
+example_recipe <- 
+  recipe(. ~ .,data = mtcars) |>
+  step_outliers_maha(all_numeric())
+```
+
+
+Juice it. 
+
+```{r}
+example_recipe |>
+  prep() |> 
+  juice()
+```
+You can even give it a new name!
+
+
+```{r}
+example_feature <- 
+  recipe(. ~ .,data = mtcars) |>
+  step_outliers_maha(all_numeric(),name_mutate = 'maha') |> 
+  prep() |> 
+  juice()
+
+example_feature |> select(maha,everything())
+```

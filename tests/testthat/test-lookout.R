@@ -10,9 +10,9 @@ rec_obj <-
 
 juice_result <- juice(rec_obj)
 
-outlier_probability <- juice_result$.outliers_lookout
+outlier_score <- juice_result$.outliers_lookout
 
-test_probabilities(outlier_probability)
+test_scores(outlier_score)
 # > Test passed <U+0001F638>
 
 
@@ -38,5 +38,5 @@ tidy_rec_obj_not_prep <-
   tidy(number = 1)
 
 test_that("tidy probs go to NA", {
-  expect_equal(all(is.na(tidy_rec_obj_not_prep$outlier_probability)), expected = T)
+  expect_equal(all(is.na(tidy_rec_obj_not_prep$outlier_score)), expected = T)
 })

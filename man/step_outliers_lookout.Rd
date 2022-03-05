@@ -3,17 +3,18 @@
 \name{step_outliers_lookout}
 \alias{step_outliers_lookout}
 \alias{tidy.step_outliers_lookout}
-\title{Calculate the \link[=lookout]{lookout package} outlier "probability"}
+\title{Calculate the \link[=lookout]{lookout package} outlier "score"}
 \usage{
 step_outliers_lookout(
   recipe,
   ...,
   role = NA,
   trained = FALSE,
-  outlier_probability = NULL,
+  outlier_score = NULL,
   columns = NULL,
   name_mutate = ".outliers_lookout",
   options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
+  invert_results = FALSE,
   skip = TRUE,
   id = rand_id("outliers_lookout")
 )
@@ -24,24 +25,24 @@ step_outliers_lookout(
 \item{recipe}{A recipe object. The step will be added to the
 sequence of operations for this recipe.}
 
-\item{...}{One or more selector functions to choose which
-variables will be transformed. See \code{\link[=selections]{selections()}} for
-more details. For the \code{tidy} method, these are not
-currently used.}
+\item{...}{One or more selector functions to choose variables
+for this step. See \code{\link[recipes:selections]{selections()}} for more details.}
 
 \item{role}{not defined for this function}
 
 \item{trained}{A logical to indicate if the quantities for
 preprocessing have been estimated.}
 
-\item{outlier_probability}{a placeholder for the exit of this function don't change}
+\item{outlier_score}{a placeholder for the exit of this function don't change}
 
 \item{columns}{A character string of variable names that will
 be populated (eventually) by the terms argument.}
 
 \item{name_mutate}{the name of the generated column with lookout probabilities}
 
-\item{options}{a list with alpha, unitize which decides normalization, bw and gdp \link{lookout} function}
+\item{options}{a list with alpha, unitize which decides normalization, bw and gdp \link{lookout} function.}
+
+\item{invert_results}{controler to transform the original \link{lookout} function result to an outlier score.}
 
 \item{skip}{A logical. Should the step be skipped when the
 recipe is baked by \code{\link[recipes:bake]{bake()}}? While all operations are baked
@@ -57,11 +58,11 @@ the computations for subsequent operations.}
 \value{
 An updated version of \code{recipe} with the new step
 added to the sequence of existing steps (if any), with the name on \code{name_mutate} and the probabilities calculated. For the
-\code{tidy} method, a tibble with columns \code{index} (the row indexes of the tibble) and \code{outlier_probability} (the probabilites).
+\code{tidy} method, a tibble with columns \code{index} (the row indexes of the tibble) and \code{outlier_score} (the probabilites).
 }
 \description{
 \code{step_outliers_lookout} creates a \emph{specification} of a recipe
-step that will calculate the probability of the row of selected columns being an outliers using \link{lookout} from \code{lookout}.
+step that will calculate the outlier score using \link{lookout} from \code{lookout} and inverting the results.
 }
 \details{
 All columns in the data are sampled and returned by \code{\link[=juice]{juice()}}

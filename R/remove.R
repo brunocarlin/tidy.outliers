@@ -1,7 +1,7 @@
 #' Calculate the aggregation of a set of outlier columns and filters the resulting tibble
 #'
 #' `step_outliers_remove` creates a *specification* of a recipe
-#'  step that will calculate the probability of the row of selected columns using an aggregation function and filter the resulting tibble based on the filter function
+#'  step that will calculate the score of the row of selected columns using an aggregation function and filter the resulting tibble based on the filter function
 #'
 #' @keywords datagen
 #' @concept preprocessing
@@ -12,7 +12,7 @@
 #'  currently used.
 #' @param role not defined for this function
 #' @param aggregation_function a function that returns a value between 0 and 1 on an applied row
-#' @param probability_dropout a value between 0 and 1 to decide outliers uses ">=" rule
+#' @param score_dropout a value between 0 and 1 to decide outliers uses ">=" rule
 #' @param col_names name of the columns being operated on, after filtering they will be removed
 #' @param outliers_indexes placeholder for the tidy method
 #' @param aggregation_results a placeholder for the vector of probabilities
@@ -48,7 +48,7 @@ step_outliers_remove <- function(
     recipe,
     ...,
     aggregation_function = mean,
-    probability_dropout = .95,
+    score_dropout = .95,
     outliers_indexes = NULL,
     aggregation_results = NULL,
     col_names = NULL,
@@ -69,7 +69,7 @@ step_outliers_remove <- function(
       trained = trained,
       role = role,
       aggregation_function = aggregation_function,
-      probability_dropout = probability_dropout,
+      score_dropout = score_dropout,
       outliers_indexes = outliers_indexes,
       aggregation_results = aggregation_results,
       col_names = col_names,
@@ -86,7 +86,7 @@ step_outliers_remove_new <-
            role,
            trained,
            aggregation_function = aggregation_function,
-           probability_dropout = probability_dropout,
+           score_dropout = score_dropout,
            outliers_indexes = outliers_indexes,
            aggregation_results = aggregation_results,
            col_names = col_names,
@@ -98,7 +98,7 @@ step_outliers_remove_new <-
       role = role,
       trained = trained,
       aggregation_function = aggregation_function,
-      probability_dropout = probability_dropout,
+      score_dropout = score_dropout,
       outliers_indexes = outliers_indexes,
       aggregation_results = aggregation_results,
       col_names = col_names,
@@ -108,11 +108,11 @@ step_outliers_remove_new <-
   }
 
 
-get_outliers_combination <- function(x, aggregation_function, probability_dropout) {
+get_outliers_combination <- function(x, aggregation_function, score_dropout) {
   aggregation_results <- apply(x, 1, aggregation_function)
 
 
-  outliers_indexes <- which(aggregation_results >= probability_dropout)
+  outliers_indexes <- which(aggregation_results >= score_dropout)
 
   list(outliers_indexes = outliers_indexes, aggregation_results = aggregation_results)
 }
@@ -127,7 +127,7 @@ prep.step_outliers_remove <- function(x, training, info = NULL, ...) {
 
   outliers_combination <- get_outliers_combination(training[, col_names],
                                                    aggregation_function = x$aggregation_function,
-                                                   probability_dropout = x$probability_dropout
+                                                   score_dropout = x$score_dropout
   )
 
   outliers_indexes <- outliers_combination$outliers_indexes
@@ -142,7 +142,7 @@ prep.step_outliers_remove <- function(x, training, info = NULL, ...) {
     trained = TRUE,
     role = x$role,
     aggregation_function = x$aggregation_function,
-    probability_dropout = x$probability_dropout,
+    score_dropout = x$score_dropout,
     outliers_indexes = outliers_indexes,
     aggregation_results = aggregation_results,
     col_names = col_names,
@@ -229,8 +229,8 @@ aggregation <- function(values = c( "mean","min", "max")) {
 
 #' @export
 tunable.step_outliers_remove <- function(x, ...) {
-  probability_dropout <- tibble::tibble(
-    name = c("probability_dropout"),
+  score_dropout <- tibble::tibble(
+    name = c("score_dropout"),
     call_info = list(list(pkg = "dials", fun = "dropout")),
     source = "recipe",
     component = "step_outliers_remove",
@@ -243,5 +243,5 @@ tunable.step_outliers_remove <- function(x, ...) {
     component = "step_outliers_remove",
     component_id = x$id
   )
-  dplyr::bind_rows(probability_dropout,aggregation_function)
+  dplyr::bind_rows(score_dropout,aggregation_function)
 }

@@ -9,7 +9,7 @@ step_outliers_remove(
   recipe,
   ...,
   aggregation_function = mean,
-  probability_dropout = 0.95,
+  score_dropout = 0.95,
   outliers_indexes = NULL,
   aggregation_results = NULL,
   col_names = NULL,
@@ -32,7 +32,7 @@ currently used.}
 
 \item{aggregation_function}{a function that returns a value between 0 and 1 on an applied row}
 
-\item{probability_dropout}{a value between 0 and 1 to decide outliers uses ">=" rule}
+\item{score_dropout}{a value between 0 and 1 to decide outliers uses ">=" rule}
 
 \item{outliers_indexes}{placeholder for the tidy method}
 
@@ -63,7 +63,7 @@ added to the sequence of existing steps (if any), with the name on \code{name_mu
 }
 \description{
 \code{step_outliers_remove} creates a \emph{specification} of a recipe
-step that will calculate the probability of the row of selected columns using an aggregation function and filter the resulting tibble based on the filter function
+step that will calculate the score of the row of selected columns using an aggregation function and filter the resulting tibble based on the filter function
 }
 \details{
 All columns in the data are sampled and returned by \code{\link[=juice]{juice()}}
