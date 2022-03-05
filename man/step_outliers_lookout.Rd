@@ -14,7 +14,6 @@ step_outliers_lookout(
   columns = NULL,
   name_mutate = ".outliers_lookout",
   options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
-  invert_results = FALSE,
   skip = TRUE,
   id = rand_id("outliers_lookout")
 )
@@ -42,8 +41,6 @@ be populated (eventually) by the terms argument.}
 
 \item{options}{a list with alpha, unitize which decides normalization, bw and gdp \link{lookout} function.}
 
-\item{invert_results}{controler to transform the original \link{lookout} function result to an outlier score.}
-
 \item{skip}{A logical. Should the step be skipped when the
 recipe is baked by \code{\link[recipes:bake]{bake()}}? While all operations are baked
 when \code{\link[recipes:prep]{prep()}} is run, some operations may not be able to be
@@ -62,7 +59,7 @@ added to the sequence of existing steps (if any), with the name on \code{name_mu
 }
 \description{
 \code{step_outliers_lookout} creates a \emph{specification} of a recipe
-step that will calculate the outlier score using \link{lookout} from \code{lookout} and inverting the results.
+step that will calculate the outlier score using \link{lookout} from \code{lookout}.
 }
 \details{
 All columns in the data are sampled and returned by \code{\link[=juice]{juice()}}
