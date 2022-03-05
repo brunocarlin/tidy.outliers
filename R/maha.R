@@ -104,15 +104,10 @@ step_outliers_maha_new <-
 
 
 get_train_score_maha <- function(x, args = NULL) {
-  maha <- function(x) {
     m <- mahalanobis(x, colMeans(x), cov(x))
     p <- pchisq(m, ncol(x))
 
     return(p)
-  }
-
-
-  maha(x)
 }
 
 

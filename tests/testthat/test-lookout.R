@@ -2,6 +2,10 @@ library(recipes)
 library(tidy.outliers)
 library(tune)
 
+
+# set up data -----------------------------------------------------------------------------------------------------
+
+
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) %>%
   step_outliers_lookout(all_numeric(), -all_outcomes()) %>%
@@ -11,6 +15,22 @@ rec_obj <-
 juice_result <- juice(rec_obj)
 
 outlier_score <- juice_result$.outliers_lookout
+
+
+rec_obj_invert <-
+  recipe(mpg ~ ., data = mtcars) %>%
+  step_outliers_lookout(all_numeric(), -all_outcomes(),invert_results = FALSE) %>%
+  prep(mtcars)
+
+
+juice_result_invert <- juice(rec_obj_invert)
+
+outlier_score_invert <- juice_result_invert$.outliers_lookout
+
+
+
+# run tests -------------------------------------------------------------------------------------------------------
+
 
 test_scores(outlier_score)
 # > Test passed <U+0001F638>
@@ -40,3 +60,8 @@ tidy_rec_obj_not_prep <-
 test_that("tidy probs go to NA", {
   expect_equal(all(is.na(tidy_rec_obj_not_prep$outlier_score)), expected = T)
 })
+
+
+test_that('invert_probs_works',
+        expect_identical()
+      )

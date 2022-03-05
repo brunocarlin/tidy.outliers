@@ -126,4 +126,4 @@ tidy(rec_obj2,number = 3) |>
 
 # Integration with tidymodels
 
-The package was made to play nice with tune and friends from tidymodels check out the article on our page!
+The package was made to play nice with tune and friends from tidymodels check out the article on our [page](https://brunocarlin.github.io/tidy.outliers/articles/integration_tidymodels.html)!

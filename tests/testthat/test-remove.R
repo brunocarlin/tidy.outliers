@@ -1,5 +1,5 @@
-library(recipes)
 library(tidy.outliers)
+library(tidymodels)
 
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) %>%
@@ -40,10 +40,10 @@ tidy_rec_obj_not_prep <-
   recipe(mpg ~ ., data = mtcars) %>%
   step_outliers_maha(all_numeric(), -all_outcomes()) %>%
   step_outliers_remove(contains(r"(.outliers)")) %>%
-  tidy(number = 1)
+  tidy(number = 2)
 
 test_that("tidy not prepped works", {
-  expect_equal(all(tidy_rec_obj_not_prep$aggregation_results_tbl == 0), expected = T)
+  expect_equal(all(tidy_rec_obj_not_prep$aggregation_results == 0), expected = T)
   expect_equal(all(tidy_rec_obj_not_prep$outliers == F), expected = T)
 })
 
@@ -66,4 +66,38 @@ test_that("tune wrorks", {
     names(rec_param),
     c("name", "call_info", "source", "component", "component_id")
   )
+})
+
+# Test that custom functions work with tidymodels
+
+rec_obj_tune <-
+  recipe(Sale_Price ~ Lot_Frontage + Lot_Area, data = ames) %>%
+  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  step_outliers_lookout(all_numeric(),-contains(r"(.outliers)"),-all_outcomes()) |>
+  step_outliers_remove(contains(r"(.outliers)"),
+                       score_dropout = tune("dropout"),
+                       aggregation_function = tune("aggregation"))
+
+
+tune_grid <- parameters(rec_obj_tune) |>
+  update(dropout = dials::dropout(range = c(0.75, 1)),
+         aggregation = aggregation()
+)
+
+spline_grid <- grid_max_entropy(tune_grid, size = 10)
+
+lin_mod <-
+  linear_reg() |>
+  set_engine("lm")
+
+workflow <- workflow() |>
+  add_recipe(rec_obj_tune) |>
+  add_model(lin_mod)
+
+tune_grid_result <- tune::tune_grid(workflow,resamples = rsample::vfold_cv(ames,2),grid =spline_grid)
+
+best_five <- tune_grid_result |> tune::show_best(metric = 'rmse')
+
+test_that('grid search works', {
+  expect_gt(max(best_five$mean), min(best_five$mean))
 })

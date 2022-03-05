@@ -1,7 +1,7 @@
 #' Calculate the [lookout package][lookout] outlier "score"
 #'
 #' `step_outliers_lookout` creates a *specification* of a recipe
-#'  step that will calculate the outlier score using [lookout] from `lookout` and inverting the results.
+#'  step that will calculate the outlier score using [lookout] from `lookout`.
 #'
 #' @keywords datagen
 #' @concept preprocessing
@@ -13,7 +13,6 @@
 #' @param name_mutate the name of the generated column with lookout probabilities
 #' @importFrom lookout lookout
 #' @param options a list with alpha, unitize which decides normalization, bw and gdp [lookout] function.
-#' @param invert_results controler to transform the original [lookout] function result to an outlier score.
 #' @return An updated version of `recipe` with the new step
 #'  added to the sequence of existing steps (if any), with the name on `name_mutate` and the probabilities calculated. For the
 #'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_score` (the probabilites).
@@ -48,7 +47,6 @@ step_outliers_lookout <- function(recipe,
                                   columns = NULL,
                                   name_mutate = ".outliers_lookout",
                                   options = list(alpha = 0.05, unitize = TRUE, bw = NULL, gpd = NULL),
-                                  invert_results = FALSE,
                                   skip = TRUE,
                                   id = rand_id("outliers_lookout")) {
 
@@ -69,7 +67,6 @@ step_outliers_lookout <- function(recipe,
       columns = columns,
       name_mutate = name_mutate,
       options = options,
-      invert_results = invert_results,
       skip = skip,
       id = id
     )
@@ -86,7 +83,6 @@ step_outliers_lookout_new <-
            columns,
            name_mutate,
            options,
-           invert_results,
            skip,
            id) {
     step(
@@ -98,19 +94,14 @@ step_outliers_lookout_new <-
       columns = columns,
       name_mutate = name_mutate,
       options = options,
-      invert_results = invert_results,
       skip = skip,
       id = id
     )
   }
 
 
-get_train_score_lookout <- function(x, args = NULL, invert_results = TRUE) {
+get_train_score_lookout <- function(x, args = NULL) {
   res <- rlang::exec("lookout", X = x, !!!args)$`outlier_score`
-
-  if (invert_results) {
-    res <- (res - 1) * -1
-  }
 
   return(res)
 }
@@ -135,7 +126,7 @@ prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
   }
 
 
-  outlier_score <- training[, col_names] %>% get_train_score_lookout(args = x$options, invert_results = x$invert_results)
+  outlier_score <- training[, col_names] %>% get_train_score_lookout(args = x$options)
 
 
   ## Use the constructor function to return the updated object.
@@ -149,7 +140,6 @@ prep.step_outliers_lookout <- function(x, training, info = NULL, ...) {
     columns = col_names,
     name_mutate = x$name_mutate,
     options = x$options,
-    invert_results = x$invert_results,
     skip = x$skip,
     id = x$id
   )

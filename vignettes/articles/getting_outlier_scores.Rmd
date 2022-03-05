@@ -15,7 +15,8 @@ library(tidy.outliers)
 library(recipes)
 ```
 
-One of the most import aspects of tidyoutliers may be that you want to model something directly using the outlier score, that is pretty easy to do
+One of neat applications of tidy.outliers is that you may want to model just use the outlier score outside of an workflow, this can be easily done as show.
+
 
 # Mahalanobis Score
 

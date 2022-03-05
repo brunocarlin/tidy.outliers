@@ -14,9 +14,12 @@ library(tidy.outliers)
 ```
 
 
+The most central aspect of tidy.outliers is to combine it on a workflow to filter outliers out of your training dataset, and to consider the outlier removal process just one of your many dials controlled hyper parameters, you can even 'pool' the score out of multiple outlier methods!
+
+
 # Load tidymodels
 
-```{r echo=TRUE, warning=FALSE,message=FALSE }
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 library(tidymodels)
 ```
 
