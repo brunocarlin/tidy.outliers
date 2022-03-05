@@ -43,7 +43,7 @@ And the development version from GitHub with:
 
 ```{r eval=FALSE, include=TRUE}
 # install.packages("devtools")
-devtools::install_github("brunocarlin/tidy.outliers")
+# devtools::install_github("brunocarlin/tidy.outliers")
 ```
 
 
@@ -212,7 +212,7 @@ wf_tune <- workflow() |>
 
 ```{r}
 set.seed(2453)
-cv_splits <- vfold_cv(ames_train, v = 10, strata = Sale_Price)
+cv_splits <- vfold_cv(ames_train, v = 5, strata = Sale_Price)
 ```
 
 
