@@ -43,5 +43,6 @@ jobs:
         with:
           extra-packages:
             rcmdcheck
+            tidymodels
 
       - uses: r-lib/actions/check-r-package@v2
