@@ -44,28 +44,30 @@
 #'
 #' tidy(rec_obj, number = 1)
 step_outliers_forest <- function(recipe,
-                                  ...,
-                                  role = NA,
-                                  trained = FALSE,
-                                  outlier_score = NULL,
-                                  columns = NULL,
-                                  name_mutate = ".outliers_forest",
-                                  options = list(formula = . ~ .,
-                                                 replace = c("pmm", "predictions", "NA", "no"),
-                                                 pmm.k = 3,
-                                                 threshold = 3,
-                                                 max_n_outliers = Inf,
-                                                 max_prop_outliers = 1,
-                                                 min.node.size = 40,
-                                                 allow_predictions = FALSE,
-                                                 impute_multivariate = TRUE,
-                                                 impute_multivariate_control = list(pmm.k = 3, num.trees = 50, maxiter = 3L),
-                                                 seed = NULL,
-                                                 verbose = 0),
-                                  outlier_score_function = mean,
-                                  original_result = FALSE,
-                                  skip = TRUE,
-                                  id = rand_id("outliers_forest")) {
+                                 ...,
+                                 role = NA,
+                                 trained = FALSE,
+                                 outlier_score = NULL,
+                                 columns = NULL,
+                                 name_mutate = ".outliers_forest",
+                                 options = list(
+                                   formula = . ~ .,
+                                   replace = c("pmm", "predictions", "NA", "no"),
+                                   pmm.k = 3,
+                                   threshold = 3,
+                                   max_n_outliers = Inf,
+                                   max_prop_outliers = 1,
+                                   min.node.size = 40,
+                                   allow_predictions = FALSE,
+                                   impute_multivariate = TRUE,
+                                   impute_multivariate_control = list(pmm.k = 3, num.trees = 50, maxiter = 3L),
+                                   seed = NULL,
+                                   verbose = 0
+                                 ),
+                                 outlier_score_function = mean,
+                                 original_result = FALSE,
+                                 skip = TRUE,
+                                 id = rand_id("outliers_forest")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
@@ -132,8 +134,7 @@ step_outliers_forest_new <-
 #'
 #' @noRd
 #' @keywords internal
-get_train_score_forest <- function(x, args,original_result,outlier_score_function) {
-
+get_train_score_forest <- function(x, args, original_result, outlier_score_function) {
   out <- rlang::exec("outForest", data = x, !!!args)
 
   data_outliers <- out$outliers |>
@@ -144,34 +145,38 @@ get_train_score_forest <- function(x, args,original_result,outlier_score_functio
       nest_by(row)
 
     res <- x |>
-      mutate(row = row_number(),
-             col = NA_character_,
-             observed = NA_real_,
-             predicted = NA_real_,
-             rmse = NA_real_,
-             score = NA_real_,
-             threshold = NA_real_,
-             replacement = NA_real_,
-             .keep = 'none') |>
+      mutate(
+        row = row_number(),
+        col = NA_character_,
+        observed = NA_real_,
+        predicted = NA_real_,
+        rmse = NA_real_,
+        score = NA_real_,
+        threshold = NA_real_,
+        replacement = NA_real_,
+        .keep = "none"
+      ) |>
       nest_by(row) |>
       ungroup() |>
-      left_join(nest_outlier,by = 'row') |>
-      mutate(score = if_else(map_lgl(.data$data.y,is.null),.data$data.x,.data$data.y),.keep = 'none')
+      left_join(nest_outlier, by = "row") |>
+      mutate(score = if_else(map_lgl(.data$data.y, is.null), .data$data.x, .data$data.y), .keep = "none")
 
     return(res)
   }
 
 
-  summarise_outlier <- data_outliers|>
+  summarise_outlier <- data_outliers |>
     group_by(row) |>
-    summarise(outlier_score = abs(.data$score) |> outlier_score_function(),.groups = 'drop')
+    summarise(outlier_score = abs(.data$score) |> outlier_score_function(), .groups = "drop")
 
   res <- x |>
-    mutate(row = row_number(),
-           not_outlier_score = 0,
-           .keep = 'none') |>
-    left_join(summarise_outlier,by = 'row') |>
-    mutate(score = coalesce(.data$outlier_score,.data$not_outlier_score)) |>
+    mutate(
+      row = row_number(),
+      not_outlier_score = 0,
+      .keep = "none"
+    ) |>
+    left_join(summarise_outlier, by = "row") |>
+    mutate(score = coalesce(.data$outlier_score, .data$not_outlier_score)) |>
     summarise(score = percent_rank(.data$score))
 
   return(res)
@@ -196,9 +201,11 @@ prep.step_outliers_forest <- function(x, training, info = NULL, ...) {
   #   ))
   # }
 
-  outlier_score <- training[, col_names] %>% get_train_score_forest(args = x$options,
-                                                                    original_result = x$original_result,
-                                                                    outlier_score_function = x$outlier_score_function)
+  outlier_score <- training[, col_names] %>% get_train_score_forest(
+    args = x$options,
+    original_result = x$original_result,
+    outlier_score_function = x$outlier_score_function
+  )
 
 
   ## Use the constructor function to return the updated object.
