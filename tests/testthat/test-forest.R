@@ -68,7 +68,7 @@ tibbles_to_test_original_result <- rec_obj_original_result |>
   )
 
 test_that("orignal result is return valid results", {
-  expect_gt(tibbles_to_test_original_result$min, 0)
+  expect_gt(abs(tibbles_to_test_original_result$min), 0)
   expect_gt(tibbles_to_test_original_result$max, tibbles_to_test_original_result$min)
   expect_identical(tibbles_to_test_original_result$some_nas, NA_real_)
 })
