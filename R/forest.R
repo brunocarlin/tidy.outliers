@@ -156,7 +156,7 @@ get_train_score_forest <- function(x, args,original_result,outlier_score_functio
       nest_by(row) |>
       ungroup() |>
       left_join(nest_outlier,by = 'row') |>
-      mutate(score = if_else(map_lgl(data.y,is.null),data.x,data.y),.keep = 'none')
+      mutate(score = if_else(map_lgl(.data$data.y,is.null),.data$data.x,.data$data.y),.keep = 'none')
 
     return(res)
   }
@@ -164,15 +164,15 @@ get_train_score_forest <- function(x, args,original_result,outlier_score_functio
 
   summarise_outlier <- data_outliers|>
     group_by(row) |>
-    summarise(outlier_score = abs(score) |> outlier_score_function(),.groups = 'drop')
+    summarise(outlier_score = abs(.data$score) |> outlier_score_function(),.groups = 'drop')
 
   res <- x |>
     mutate(row = row_number(),
            not_outlier_score = 0,
            .keep = 'none') |>
     left_join(summarise_outlier,by = 'row') |>
-    mutate(score = coalesce(outlier_score,not_outlier_score)) |>
-    summarise(score = percent_rank(score))
+    mutate(score = coalesce(.data$outlier_score,.data$not_outlier_score)) |>
+    summarise(score = percent_rank(.data$score))
 
   return(res)
 }
