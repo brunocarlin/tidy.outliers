@@ -9,12 +9,12 @@ library(tidy.outliers)
 
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_forest(all_numeric(), -all_outcomes()) %>%
+  step_outliers_outForest(all_numeric(), -all_outcomes()) %>%
   prep(mtcars)
 
 juice_result <- juice(rec_obj)
 
-outlier_score <- juice_result$.outliers_forest
+outlier_score <- juice_result$.outliers_outForest
 
 
 # usual cases -----------------------------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ test_that("tidy probs work", {
 
 tidy_rec_obj_not_prep <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_forest(all_numeric(), -all_outcomes()) %>%
+  step_outliers_outForest(all_numeric(), -all_outcomes()) %>%
   tidy(number = 1)
 
 test_that("tidy probs go to NA", {
@@ -54,13 +54,13 @@ test_that("tidy probs go to NA", {
 
 rec_obj_original_result <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_forest(all_numeric(), -all_outcomes(), original_result = TRUE) %>%
+  step_outliers_outForest(all_numeric(), -all_outcomes(), original_result = TRUE) %>%
   prep(mtcars)
 
 tibbles_to_test_original_result <- rec_obj_original_result |>
   juice() |>
   select(contains("outliers")) |>
-  mutate(scores = map(.outliers_forest$score, \(x) x |> pull(score))) |>
+  mutate(scores = map(.outliers_outForest$score, \(x) x |> pull(score))) |>
   summarise(
     max = max(scores |> unlist(), na.rm = TRUE),
     min = min(scores |> unlist(), na.rm = TRUE),
@@ -78,14 +78,14 @@ test_that("orignal result is return valid results", {
 
 rec_obj_outlier_score_function <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_forest(all_numeric(), -all_outcomes(), outlier_score_function = \(x) {
+  step_outliers_outForest(all_numeric(), -all_outcomes(), outlier_score_function = \(x) {
     sum(x) / sum(x)
   }) %>%
   prep(mtcars)
 
 juice_result_outlier_score_function <- juice(rec_obj_outlier_score_function)
 
-outlier_score_outlier_score_function <- juice_result_outlier_score_function$.outliers_forest
+outlier_score_outlier_score_function <- juice_result_outlier_score_function$.outliers_outForest
 
 non_zeroes <- outlier_score_outlier_score_function[outlier_score_outlier_score_function != 0]
 

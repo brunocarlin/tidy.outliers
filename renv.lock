@@ -86,6 +86,16 @@
       "Hash": "e031418365a7f7a766181ab5a41a5716",
       "Requirements": []
     },
+    "RCurl": {
+      "Package": "RCurl",
+      "Version": "1.98-1.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "53a4a5e55370f1a1a4afd92356252946",
+      "Requirements": [
+        "bitops"
+      ]
+    },
     "Rcpp": {
       "Package": "Rcpp",
       "Version": "1.0.8",
@@ -148,6 +158,14 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "543776ae6848fde2f48ff3816d0628bc",
+      "Requirements": []
+    },
+    "bitops": {
+      "Package": "bitops",
+      "Version": "1.0-7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b7d8d8ee39869c18d8846a184dd8a1af",
       "Requirements": []
     },
     "brio": {
@@ -303,13 +321,13 @@
     },
     "desc": {
       "Package": "desc",
-      "Version": "1.4.0",
+      "Version": "1.4.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "28763d08fadd0b733e3cee9dab4e12fe",
+      "Hash": "eebd27ee58fcc58714eedb7aa07d8ad1",
       "Requirements": [
         "R6",
-        "crayon",
+        "cli",
         "rprojroot"
       ]
     },
@@ -557,6 +575,17 @@
       "Repository": "CRAN",
       "Hash": "ac5c6baf7822ce8732b343f14c072c4d",
       "Requirements": []
+    },
+    "h2o": {
+      "Package": "h2o",
+      "Version": "3.36.0.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "91154c14fef3de44b39e0961509e8f0d",
+      "Requirements": [
+        "RCurl",
+        "jsonlite"
+      ]
     },
     "hardhat": {
       "Package": "hardhat",

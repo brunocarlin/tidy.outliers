@@ -1,6 +1,6 @@
 #' Calculate the [outForest package][outForest] outlier "score"
 #'
-#' `step_outliers_forest` creates a *specification* of a recipe
+#' `step_outliers_outForest` creates a *specification* of a recipe
 #'  step that will calculate the outlier score using [outForest] from `outForest`, it internally handles missing data.
 #'
 #' @keywords datagen
@@ -37,19 +37,19 @@
 #' library(tidy.outliers)
 #' rec_obj <-
 #'   recipe(mpg ~ ., data = mtcars) %>%
-#'   step_outliers_forest(all_numeric(), -all_outcomes()) %>%
+#'   step_outliers_outForest(all_numeric(), -all_outcomes()) %>%
 #'   prep(mtcars)
 #'
 #' juice(rec_obj)
 #'
 #' tidy(rec_obj, number = 1)
-step_outliers_forest <- function(recipe,
+step_outliers_outForest <- function(recipe,
                                  ...,
                                  role = NA,
                                  trained = FALSE,
                                  outlier_score = NULL,
                                  columns = NULL,
-                                 name_mutate = ".outliers_forest",
+                                 name_mutate = ".outliers_outForest",
                                  options = list(
                                    formula = . ~ .,
                                    replace = c("pmm", "predictions", "NA", "no"),
@@ -67,18 +67,18 @@ step_outliers_forest <- function(recipe,
                                  outlier_score_function = mean,
                                  original_result = FALSE,
                                  skip = TRUE,
-                                 id = rand_id("outliers_forest")) {
+                                 id = rand_id("outliers_outForest")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
   ##  the values and also checks to make sure that they are not empty.
   terms <- ellipse_check(...)
 
-  recipes_pkg_check(required_pkgs.step_outliers_forest())
+  recipes_pkg_check(required_pkgs.step_outliers_outForest())
 
   add_step(
     recipe,
-    step_outliers_forest_new(
+    step_outliers_outForest_new(
       terms = terms,
       trained = trained,
       role = role,
@@ -96,7 +96,7 @@ step_outliers_forest <- function(recipe,
 
 
 
-step_outliers_forest_new <-
+step_outliers_outForest_new <-
   function(terms,
            role,
            trained,
@@ -109,7 +109,7 @@ step_outliers_forest_new <-
            skip,
            id) {
     step(
-      subclass = "outliers_forest",
+      subclass = "outliers_outForest",
       terms = terms,
       role = role,
       trained = trained,
@@ -134,7 +134,7 @@ step_outliers_forest_new <-
 #'
 #' @noRd
 #' @keywords internal
-get_train_score_forest <- function(x, args, original_result, outlier_score_function) {
+get_train_score_outForest <- function(x, args, original_result, outlier_score_function) {
   out <- rlang::exec("outForest", data = x, !!!args)
 
   data_outliers <- out$outliers |>
@@ -184,7 +184,7 @@ get_train_score_forest <- function(x, args, original_result, outlier_score_funct
 
 
 #' @export
-prep.step_outliers_forest <- function(x, training, info = NULL, ...) {
+prep.step_outliers_outForest <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info = info)
   ## You can add error trapping for non-numeric data here and so on.
 
@@ -201,7 +201,7 @@ prep.step_outliers_forest <- function(x, training, info = NULL, ...) {
   #   ))
   # }
 
-  outlier_score <- training[, col_names] %>% get_train_score_forest(
+  outlier_score <- training[, col_names] %>% get_train_score_outForest(
     args = x$options,
     original_result = x$original_result,
     outlier_score_function = x$outlier_score_function
@@ -211,7 +211,7 @@ prep.step_outliers_forest <- function(x, training, info = NULL, ...) {
   ## Use the constructor function to return the updated object.
   ## Note that `trained` is now set to TRUE
 
-  step_outliers_forest_new(
+  step_outliers_outForest_new(
     terms = x$terms,
     trained = TRUE,
     role = x$role,
@@ -228,7 +228,7 @@ prep.step_outliers_forest <- function(x, training, info = NULL, ...) {
 
 
 #' @export
-bake.step_outliers_forest <- function(object, new_data, ...) {
+bake.step_outliers_outForest <- function(object, new_data, ...) {
   new_data[[object$name_mutate]] <- object$outlier_score
 
   new_data
@@ -243,10 +243,10 @@ format_prob <- function(step_outlier) {
   )
 }
 
-#' @rdname step_outliers_forest
-#' @param x A `step_outliers_forest` object.
+#' @rdname step_outliers_outForest
+#' @param x A `step_outliers_outForest` object.
 #' @export
-tidy.step_outliers_forest <- function(x, ...) {
+tidy.step_outliers_outForest <- function(x, ...) {
   if (is_trained(x)) {
     res <- format_prob(x)
   } else {
@@ -262,6 +262,6 @@ tidy.step_outliers_forest <- function(x, ...) {
   res
 }
 
-required_pkgs.step_outliers_forest <- function(x, ...) {
+required_pkgs.step_outliers_outForest <- function(x, ...) {
   c("outForest")
 }
