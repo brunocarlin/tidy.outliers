@@ -54,4 +54,10 @@
   <url>
     <loc>/reference/step_outliers_remove.html</loc>
   </url>
+  <url>
+    <loc>/reference/step_outliers_univariate.html</loc>
+  </url>
+  <url>
+    <loc>/reference/tidy.outliers-package.html</loc>
+  </url>
 </urlset>

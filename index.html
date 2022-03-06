@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="What the Package Does (One Line, Title Case)">
-<meta property="og:description" content='Creates two tipes of tidy steps for outliers: "probability" caluculation and outlier removal, the idea is that you can combine multiple methods and use them easily on a workflows modeling case.'>
+<meta property="og:description" content='Creates two tipes of tidy steps for outliers: "score" caluculation and outlier removal, the idea is that you can combine multiple scoring methods and use them easily on a workflows modeling case.'>
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">tidy.outliers</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -83,18 +83,24 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>The goal of tidy.outliers is to allow for easy usage of many outliers removal methods, I currently plan to implement at least:</p>
+<!-- badges: end -->
+<p>The goal of tidy.outliers is to allow for easy usage of many outliers removal methods, currently implemented are:</p>
+<p>Simple methods:</p>
 <ul>
-<li>the method on the <a href="https://github.com/Sevvandi/lookout" class="external-link">lookout package</a>
-</li>
-<li>the maha distance method</li>
-<li>some other simple outlier detection such as using IQR</li>
+<li>Univariate based function</li>
+<li>Mahalanobis distance</li>
+</ul>
+<p>Model Methods:</p>
+<ul>
+<li><a href="https://github.com/Sevvandi/lookout" class="external-link">lookout</a></li>
+<li><a href="https://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/eif.html" class="external-link">h2o.extendedIsolationForest</a></li>
+<li><a href="https://github.com/mayer79/outForest" class="external-link">outForest</a></li>
 </ul>
 </div>
 <div class="section level1">
 <h1 id="what-are-outlier-scores">What are outlier scores?<a class="anchor" aria-label="anchor" href="#what-are-outlier-scores"></a>
 </h1>
-<p>The package functions on the principal that all basic step_outlier_* functions return an outlier “score” that can be used for filtering out outlier where 0 is a very low outlier score and 1 is a very high outlier score, so you could filter, for example all rows where the outlier score is greater than .9.</p>
+<p>The package works on the principal that all basic step_outlier_* functions return an outlier “score” that can be used for filtering outliers where 0 is a very low outlier score and 1 is a very high outlier score, so you could filter, for example all rows where the outlier score is greater than .9.</p>
 </div>
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -105,7 +111,7 @@
 <p>And the development version from GitHub with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
-<span class="co"># devtools::install_github("brunocarlin/tidy.outliers")</span></code></pre></div>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"brunocarlin/tidy.outliers"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level1">
 <h1 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -138,27 +144,17 @@
 <span class="co">#&gt; # A tibble: 32 x 2</span>
 <span class="co">#&gt;    .outliers_maha .outliers_lookout</span>
 <span class="co">#&gt;             &lt;dbl&gt;             &lt;dbl&gt;</span>
-<span class="co">#&gt;  1          0.411                 1</span>
-<span class="co">#&gt;  2          0.374                 1</span>
-<span class="co">#&gt;  3          0.222                 1</span>
-<span class="co">#&gt;  4          0.192                 1</span>
-<span class="co">#&gt;  5          0.124                 1</span>
-<span class="co">#&gt;  6          0.350                 1</span>
-<span class="co">#&gt;  7          0.481                 1</span>
-<span class="co">#&gt;  8          0.493                 1</span>
-<span class="co">#&gt;  9          0.985                 1</span>
-<span class="co">#&gt; 10          0.737                 1</span>
+<span class="co">#&gt;  1          0.959            1     </span>
+<span class="co">#&gt;  2          0.967            0.506 </span>
+<span class="co">#&gt;  3          0.951            0.403 </span>
+<span class="co">#&gt;  4          0.654            0.108 </span>
+<span class="co">#&gt;  5          0.864            0.0795</span>
+<span class="co">#&gt;  6          0.741            0.0787</span>
+<span class="co">#&gt;  7          0.411            0     </span>
+<span class="co">#&gt;  8          0.374            0     </span>
+<span class="co">#&gt;  9          0.222            0     </span>
+<span class="co">#&gt; 10          0.192            0     </span>
 <span class="co">#&gt; # ... with 22 more rows</span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="get-step-ids">Get step id’s<a class="anchor" aria-label="anchor" href="#get-step-ids"></a>
-</h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="va">rec_obj</span>,number <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">id</span> |&gt; <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "outliers_maha_wQAPZ"</span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="va">rec_obj</span>,number <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">$</span><span class="va">id</span> |&gt; <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "outliers_lookout_Ts0eX"</span></code></pre></div>
 </div>
 </div>
 <div class="section level1">
@@ -167,7 +163,7 @@
 <div class="section level2">
 <h2 id="create-recipe-filtering-outliers">Create recipe filtering outliers<a class="anchor" aria-label="anchor" href="#create-recipe-filtering-outliers"></a>
 </h2>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">rec_obj2</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipe</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span> |&gt;
   <span class="fu"><a href="reference/step_outliers_maha.html">step_outliers_maha</a></span><span class="op">(</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_numeric</a></span><span class="op">(</span><span class="op">)</span>, <span class="op">-</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_outcomes</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> |&gt;
@@ -179,22 +175,22 @@
 <h2 id="returns-the-filtered-rows">Returns the filtered rows<a class="anchor" aria-label="anchor" href="#returns-the-filtered-rows"></a>
 </h2>
 <p>We filtered one row from the dataset and and automatically removed the extra outlier columns.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://recipes.tidymodels.org/reference/juice.html" class="external-link">juice</a></span><span class="op">(</span><span class="va">rec_obj2</span><span class="op">)</span> |&gt; <span class="fu"><a href="https://dplyr.tidyverse.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 31</span>
 <span class="co">#&gt; Columns: 11</span>
-<span class="co">#&gt; $ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4, 4, 8, 8,~</span>
-<span class="co">#&gt; $ disp &lt;dbl&gt; 160.0, 160.0, 108.0, 258.0, 360.0, 225.0, 360.0, 146.7, 167.6, 16~</span>
-<span class="co">#&gt; $ hp   &lt;dbl&gt; 110, 110, 93, 110, 175, 105, 245, 62, 123, 123, 180, 180, 180, 20~</span>
-<span class="co">#&gt; $ drat &lt;dbl&gt; 3.90, 3.90, 3.85, 3.08, 3.15, 2.76, 3.21, 3.69, 3.92, 3.92, 3.07,~</span>
-<span class="co">#&gt; $ wt   &lt;dbl&gt; 2.620, 2.875, 2.320, 3.215, 3.440, 3.460, 3.570, 3.190, 3.440, 3.~</span>
-<span class="co">#&gt; $ qsec &lt;dbl&gt; 16.46, 17.02, 18.61, 19.44, 17.02, 20.22, 15.84, 20.00, 18.30, 18~</span>
-<span class="co">#&gt; $ vs   &lt;dbl&gt; 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0,~</span>
-<span class="co">#&gt; $ am   &lt;dbl&gt; 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0,~</span>
-<span class="co">#&gt; $ gear &lt;dbl&gt; 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 3, 3, 3, 3, 3, 3, 4, 4, 4, 3, 3, 3,~</span>
-<span class="co">#&gt; $ carb &lt;dbl&gt; 4, 4, 1, 1, 2, 1, 4, 2, 4, 4, 3, 3, 3, 4, 4, 4, 1, 2, 1, 1, 2, 2,~</span>
-<span class="co">#&gt; $ mpg  &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 19.2, 17.8, 16.4,~</span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<span class="co">#&gt; $ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8, 6, 8, 4, 4, 6, 6, 8, 8, 8, 8, 8, 8, 4, 4, 4, 4, 8,~</span>
+<span class="co">#&gt; $ disp &lt;dbl&gt; 160.0, 160.0, 108.0, 258.0, 360.0, 225.0, 360.0, 146.7, 140.8, 16~</span>
+<span class="co">#&gt; $ hp   &lt;dbl&gt; 110, 110, 93, 110, 175, 105, 245, 62, 95, 123, 123, 180, 180, 180~</span>
+<span class="co">#&gt; $ drat &lt;dbl&gt; 3.90, 3.90, 3.85, 3.08, 3.15, 2.76, 3.21, 3.69, 3.92, 3.92, 3.92,~</span>
+<span class="co">#&gt; $ wt   &lt;dbl&gt; 2.620, 2.875, 2.320, 3.215, 3.440, 3.460, 3.570, 3.190, 3.150, 3.~</span>
+<span class="co">#&gt; $ qsec &lt;dbl&gt; 16.46, 17.02, 18.61, 19.44, 17.02, 20.22, 15.84, 20.00, 22.90, 18~</span>
+<span class="co">#&gt; $ vs   &lt;dbl&gt; 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,~</span>
+<span class="co">#&gt; $ am   &lt;dbl&gt; 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0,~</span>
+<span class="co">#&gt; $ gear &lt;dbl&gt; 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 4, 4, 4, 3, 3,~</span>
+<span class="co">#&gt; $ carb &lt;dbl&gt; 4, 4, 1, 1, 2, 1, 4, 2, 2, 4, 4, 3, 3, 3, 4, 4, 4, 1, 2, 1, 1, 2,~</span>
+<span class="co">#&gt; $ mpg  &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7, 18.1, 14.3, 24.4, 22.8, 19.2, 17.8,~</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mtcars</span> |&gt; <span class="fu"><a href="https://dplyr.tidyverse.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; Rows: 32</span>
 <span class="co">#&gt; Columns: 11</span>
@@ -214,29 +210,62 @@
 <h2 id="investigate-why-some-rows-were-filtered">Investigate why some rows were filtered<a class="anchor" aria-label="anchor" href="#investigate-why-some-rows-were-filtered"></a>
 </h2>
 <p>And we can get which were the outliers and their score</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="va">rec_obj2</span>,number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> |&gt; 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">aggregation_results</span> |&gt; <span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 32 x 3</span>
 <span class="co">#&gt;    index outliers aggregation_results</span>
 <span class="co">#&gt;    &lt;int&gt; &lt;lgl&gt;                  &lt;dbl&gt;</span>
-<span class="co">#&gt;  1     9 TRUE                   0.993</span>
-<span class="co">#&gt;  2    19 FALSE                  0.892</span>
-<span class="co">#&gt;  3    21 FALSE                  0.872</span>
-<span class="co">#&gt;  4    10 FALSE                  0.869</span>
-<span class="co">#&gt;  5    24 FALSE                  0.847</span>
-<span class="co">#&gt;  6    28 FALSE                  0.831</span>
-<span class="co">#&gt;  7    11 FALSE                  0.807</span>
-<span class="co">#&gt;  8    15 FALSE                  0.807</span>
-<span class="co">#&gt;  9    27 FALSE                  0.774</span>
-<span class="co">#&gt; 10    30 FALSE                  0.773</span>
+<span class="co">#&gt;  1    31 TRUE                   0.980</span>
+<span class="co">#&gt;  2    29 FALSE                  0.736</span>
+<span class="co">#&gt;  3    27 FALSE                  0.677</span>
+<span class="co">#&gt;  4     9 FALSE                  0.493</span>
+<span class="co">#&gt;  5    19 FALSE                  0.472</span>
+<span class="co">#&gt;  6    28 FALSE                  0.410</span>
+<span class="co">#&gt;  7    30 FALSE                  0.381</span>
+<span class="co">#&gt;  8    21 FALSE                  0.372</span>
+<span class="co">#&gt;  9    10 FALSE                  0.369</span>
+<span class="co">#&gt; 10    24 FALSE                  0.347</span>
 <span class="co">#&gt; # ... with 22 more rows</span></code></pre></div>
 </div>
 </div>
 <div class="section level1">
 <h1 id="integration-with-tidymodels">Integration with tidymodels<a class="anchor" aria-label="anchor" href="#integration-with-tidymodels"></a>
 </h1>
-<p>The package was made to play nice with tune and friends from tidymodels check out the article on our <a href="https://brunocarlin.github.io/tidy.outliers/articles/integration_tidymodels.html" class="external-link">page</a>!</p>
+<p>The package was made to play nice with tune and friends from tidymodels check out the article on our <a href="https://brunocarlin.github.io/tidy.outliers/articles/integration_tidymodels.html" class="external-link">github pkgdown page</a>!</p>
+</div>
+<div class="section level1">
+<h1 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+</h1>
+<p>Although it is possible to manually change the function of model parameters using the options argument it would be nice to add the option to tune those internal parameters as well.</p>
+<p>So instead of this.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">rec_obj2</span> <span class="op">&lt;-</span>
+  <span class="fu"><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipe</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span> |&gt; 
+  <span class="fu"><a href="reference/step_outliers_outForest.html">step_outliers_outForest</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_numeric</a></span><span class="op">(</span><span class="op">)</span>,
+    <span class="op">-</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_outcomes</a></span><span class="op">(</span><span class="op">)</span>,
+    options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    impute_multivariate_control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+      num.trees <span class="op">=</span> <span class="fl">200</span>
+    <span class="op">)</span>
+  <span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>You would write something like this</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">rec_obj2</span> <span class="op">&lt;-</span>
+  <span class="fu"><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipe</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span> |&gt; 
+  <span class="fu"><a href="reference/step_outliers_outForest.html">step_outliers_outForest</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_numeric</a></span><span class="op">(</span><span class="op">)</span>,
+    <span class="op">-</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_outcomes</a></span><span class="op">(</span><span class="op">)</span>,
+    options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    impute_multivariate_control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+      num.trees <span class="op">=</span> <span class="fu">tune</span><span class="fu">::</span><span class="fu"><a href="https://tune.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="st">'tree'</span><span class="op">)</span>
+    <span class="op">)</span>
+  <span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Registered S3 method overwritten by 'tune':</span>
+<span class="co">#&gt;   method                   from   </span>
+<span class="co">#&gt;   required_pkgs.model_spec parsnip</span></code></pre></div>
+<p>The main problem is that this would require manually going model by model and incorporating those arguments as tunable components.</p>
 </div>
 
   </div>

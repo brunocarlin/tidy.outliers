@@ -18,7 +18,7 @@ step that will calculate the outlier score using h2o.extendedIsolationForest fro
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidy.outliers</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -129,7 +129,6 @@ added to the sequence of existing steps (if any), with the name on <code>name_mu
     <h2>Details</h2>
     <p>All columns in the data are sampled and returned by <code><a href="https://recipes.tidymodels.org/reference/juice.html" class="external-link">juice()</a></code>
 and <code><a href="https://recipes.tidymodels.org/reference/bake.html" class="external-link">bake()</a></code>.</p>
-<p>All columns used in this step must be numeric with no missing data.</p>
 <p>When used in modeling, users should strongly consider using the
 option <code>skip = TRUE</code> so that this operation is <em>not</em>
 conducted outside of the training set.</p>
@@ -161,19 +160,19 @@ conducted outside of the training set.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> H2O is not running yet, starting it now...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Note:  In case of errors look at the following log files:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpTOMxSd/filee874d031841/h2o_runner_started_from_r.out</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpTOMxSd/filee8762d7ae7/h2o_runner_started_from_r.err</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpHyHGmf/fileb8048072b12/h2o_runner_started_from_r.out</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpHyHGmf/fileb804e9ccfaf/h2o_runner_started_from_r.err</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Starting H2O JVM and connecting: ... Connection successful!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> R is connected to the H2O cluster: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster uptime:         2 seconds 360 milliseconds </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster uptime:         2 seconds 380 milliseconds </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster timezone:       UTC </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O data parsing timezone:  UTC </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster version:        3.36.0.3 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster version age:    18 days  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster name:           H2O_started_from_R_runner_sdn264 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster name:           H2O_started_from_R_runner_quk168 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster total nodes:    1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster total memory:   3.11 GB </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster total cores:    3 </span>
@@ -210,16 +209,16 @@ conducted outside of the training set.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 32 × 3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    index outlier_score id                                        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     1         0.405 outliers_h2o.extendedIsolationForest_qT6YK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     2         0.403 outliers_h2o.extendedIsolationForest_qT6YK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     3         0.413 outliers_h2o.extendedIsolationForest_qT6YK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     4         0.448 outliers_h2o.extendedIsolationForest_qT6YK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     5         0.449 outliers_h2o.extendedIsolationForest_qT6YK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     6         0.445 outliers_h2o.extendedIsolationForest_qT6YK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     7         0.443 outliers_h2o.extendedIsolationForest_qT6YK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     8         0.465 outliers_h2o.extendedIsolationForest_qT6YK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     9         0.409 outliers_h2o.extendedIsolationForest_qT6YK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    10         0.408 outliers_h2o.extendedIsolationForest_qT6YK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     1         0.408 outliers_h2o.extendedIsolationForest_brHFz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     2         0.405 outliers_h2o.extendedIsolationForest_brHFz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     3         0.427 outliers_h2o.extendedIsolationForest_brHFz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     4         0.444 outliers_h2o.extendedIsolationForest_brHFz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     5         0.437 outliers_h2o.extendedIsolationForest_brHFz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     6         0.439 outliers_h2o.extendedIsolationForest_brHFz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     7         0.439 outliers_h2o.extendedIsolationForest_brHFz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     8         0.472 outliers_h2o.extendedIsolationForest_brHFz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     9         0.419 outliers_h2o.extendedIsolationForest_brHFz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    10         0.407 outliers_h2o.extendedIsolationForest_brHFz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 22 more rows</span></span>
 </code></pre></div>
     </div>
