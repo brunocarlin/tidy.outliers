@@ -68,8 +68,6 @@ step that will calculate the outlier score using \link{h2o.extendedIsolationFore
 All columns in the data are sampled and returned by \code{\link[=juice]{juice()}}
 and \code{\link[=bake]{bake()}}.
 
-All columns used in this step must be numeric with no missing data.
-
 When used in modeling, users should strongly consider using the
 option \code{skip = TRUE} so that this operation is \emph{not}
 conducted outside of the training set.

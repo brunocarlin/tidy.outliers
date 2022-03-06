@@ -35,7 +35,8 @@ Imports:
     purrr,
     h2o,
     lookout,
-    outForest
+    outForest,
+    tidyr
 Remotes: 
     sevvandi/lookout
 VignetteBuilder: knitr

@@ -16,24 +16,27 @@ knitr::opts_chunk$set(
 # tidy.outliers
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![CRAN status](https://www.r-pkg.org/badges/version/tidy.outliers)](https://CRAN.R-project.org/package=tidy.outliers)
-[![Codecov test coverage](https://codecov.io/gh/brunocarlin/tidy.outliers/branch/main/graph/badge.svg)](https://codecov.io/gh/brunocarlin/tidy.outliers?branch=master)
-[![R-CMD-check](https://github.com/brunocarlin/tidy.outliers/workflows/R-CMD-check/badge.svg)](https://github.com/brunocarlin/tidy.outliers/actions)
+
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental) [![CRAN status](https://www.r-pkg.org/badges/version/tidy.outliers)](https://CRAN.R-project.org/package=tidy.outliers) [![Codecov test coverage](https://codecov.io/gh/brunocarlin/tidy.outliers/branch/main/graph/badge.svg)](https://codecov.io/gh/brunocarlin/tidy.outliers?branch=master) [![R-CMD-check](https://github.com/brunocarlin/tidy.outliers/workflows/R-CMD-check/badge.svg)](https://github.com/brunocarlin/tidy.outliers/actions)
+
 <!-- badges: end -->
 
-The goal of tidy.outliers is to allow for easy usage of many outliers removal methods, I currently plan to implement at least:
+The goal of tidy.outliers is to allow for easy usage of many outliers removal methods, currently implemented are:
 
+Simple methods:
 
--   the method on the [lookout package](https://github.com/Sevvandi/lookout)
--   the maha distance method
--   some other simple outlier detection such as using IQR
+-   Univariate based function
+-   Mahalanobis distance
 
+Model Methods:
+
+-   [lookout](https://github.com/Sevvandi/lookout)
+-   [h2o.extendedIsolationForest](https://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/eif.html)
+-   [outForest](https://github.com/mayer79/outForest)
 
 # What are outlier scores?
 
-The package functions on the principal that all basic step_outlier_* functions return an outlier "score" that can be used for filtering out outlier where 0 is a very low outlier score and 1 is a very high outlier score, so you could filter, for example all rows where the outlier score is greater than .9.
-
+The package works on the principal that all basic step_outlier\_\* functions return an outlier "score" that can be used for filtering outliers where 0 is a very low outlier score and 1 is a very high outlier score, so you could filter, for example all rows where the outlier score is greater than .9.
 
 # Installation
 
@@ -45,11 +48,10 @@ You can not yet install the released version of tidy.outliers from [CRAN](https:
 
 And the development version from GitHub with:
 
-```{r eval=FALSE, include=TRUE}
+```{r eval=FALSE}
 # install.packages("devtools")
-# devtools::install_github("brunocarlin/tidy.outliers")
+devtools::install_github("brunocarlin/tidy.outliers")
 ```
-
 
 # Usage
 
@@ -59,7 +61,6 @@ And the development version from GitHub with:
 library(recipes)
 library(tidy.outliers)
 ```
-
 
 ## Create a recipe for calculation the outlier scores
 
@@ -73,21 +74,12 @@ rec_obj <-
   prep(mtcars)
 ```
 
-
 ## Return scores
 
 ```{r juice}
 juice(rec_obj) |> 
   select(contains(r"(.outliers)")) |> 
   arrange(.outliers_lookout |> desc())
-```
-## Get step id's
-
-```{r tidy}
-tidy(rec_obj,number = 1)$id |> unique()
-```
-```{r tidy2}
-tidy(rec_obj,number = 2)$id |> unique()
 ```
 
 # Example filtering based on scores
@@ -103,14 +95,14 @@ rec_obj2 <-
   prep(mtcars)
 ```
 
-
-## Returns the filtered rows 
+## Returns the filtered rows
 
 We filtered one row from the dataset and and automatically removed the extra outlier columns.
 
 ```{r juice remove}
 juice(rec_obj2) |> glimpse()
 ```
+
 ```{r}
 mtcars |> glimpse()
 ```
@@ -126,4 +118,40 @@ tidy(rec_obj2,number = 3) |>
 
 # Integration with tidymodels
 
-The package was made to play nice with tune and friends from tidymodels check out the article on our [page](https://brunocarlin.github.io/tidy.outliers/articles/integration_tidymodels.html)!
+The package was made to play nice with tune and friends from tidymodels check out the article on our [github pkgdown page](https://brunocarlin.github.io/tidy.outliers/articles/integration_tidymodels.html)!
+
+# Next steps
+
+Although it is possible to manually change the function of model parameters using the options argument it would be nice to add the option to tune those internal parameters as well.
+
+So instead of this.
+
+```{r}
+rec_obj2 <-
+  recipe(mpg ~ ., data = mtcars) |> 
+  step_outliers_outForest(
+    all_numeric(),
+    -all_outcomes(),
+    options = list(
+    impute_multivariate_control = list(
+      num.trees = 200
+    )
+  ))
+```
+
+You would write something like this
+
+```{r}
+rec_obj2 <-
+  recipe(mpg ~ ., data = mtcars) |> 
+  step_outliers_outForest(
+    all_numeric(),
+    -all_outcomes(),
+    options = list(
+    impute_multivariate_control = list(
+      num.trees = tune::tune('tree')
+    )
+  ))
+```
+
+The main problem is that this would require manually going model by model and incorporating those arguments as tunable components.

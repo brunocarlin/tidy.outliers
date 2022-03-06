@@ -24,8 +24,6 @@
 #' All columns in the data are sampled and returned by [juice()]
 #'  and [bake()].
 #'
-#' All columns used in this step must be numeric with no missing data.
-#'
 #' When used in modeling, users should strongly consider using the
 #'  option `skip = TRUE` so that this operation is _not_
 #'  conducted outside of the training set.
