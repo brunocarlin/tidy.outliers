@@ -37,7 +37,7 @@ preprocessing have been estimated.}
 \item{columns}{A character string of variable names that will
 be populated (eventually) by the terms argument.}
 
-\item{name_mutate}{the name of the generated column with lookout probabilities}
+\item{name_mutate}{the name of the generated column with lookout scores}
 
 \item{options}{a list with alpha, unitize which decides normalization, bw and gdp \link{lookout} function.}
 
@@ -54,8 +54,8 @@ the computations for subsequent operations.}
 }
 \value{
 An updated version of \code{recipe} with the new step
-added to the sequence of existing steps (if any), with the name on \code{name_mutate} and the probabilities calculated. For the
-\code{tidy} method, a tibble with columns \code{index} (the row indexes of the tibble) and \code{outlier_score} (the probabilites).
+added to the sequence of existing steps (if any), with the name on \code{name_mutate} and the scores calculated. For the
+\code{tidy} method, a tibble with columns \code{index} (the row indexes of the tibble) and \code{outlier_score} (the scores).
 }
 \description{
 \code{step_outliers_lookout} creates a \emph{specification} of a recipe
