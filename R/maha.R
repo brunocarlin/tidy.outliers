@@ -16,11 +16,11 @@
 #' @param outlier_score a placeholder for the exit of this function don't change
 #' @param columns A character string of variable names that will
 #'  be populated (eventually) by the terms argument.
-#' @param name_mutate the name of the generated column with maha probabilities
+#' @param name_mutate the name of the generated column with Mahalanobis scores
 #' @param options an empty list
 #' @return An updated version of `recipe` with the new step
-#'  added to the sequence of existing steps (if any), with the name on `name_mutate` and the probabilities calculated. For the
-#'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_score` (the probabilities).
+#'  added to the sequence of existing steps (if any), with the name on `name_mutate` and the scores calculated. For the
+#'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_score` (the scores).
 #'
 #' @export
 #'

@@ -1,5 +1,10 @@
+# libraries -------------------------------------------------------------------------------------------------------
+
 library(tidy.outliers)
 library(tidymodels)
+
+
+# setup -----------------------------------------------------------------------------------------------------------
 
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) %>%
@@ -14,6 +19,8 @@ tidy_result <- tidy(rec_obj, number = 2)
 aggregation_results_tbl <- tidy_result$aggregation_results
 
 
+# usual cases -----------------------------------------------------------------------------------------------------
+
 test_scores(aggregation_results_tbl)
 # Test Passed
 
@@ -25,15 +32,14 @@ test_that("na values create an error", {
 })
 # Test Passed
 
-
-
 test_that("juice results works", {
   expect_gte(nrow(mtcars), nrow(juice_result))
 })
-
-
-
 # Test passed
+
+
+
+# recipe without prep cases ---------------------------------------------------------------------------------------
 
 
 tidy_rec_obj_not_prep <-
@@ -46,6 +52,9 @@ test_that("tidy not prepped works", {
   expect_equal(all(tidy_rec_obj_not_prep$aggregation_results == 0), expected = T)
   expect_equal(all(tidy_rec_obj_not_prep$outliers == F), expected = T)
 })
+
+
+# tune cases ------------------------------------------------------------------------------------------------------
 
 
 rec_obj_tune <-
@@ -68,7 +77,9 @@ test_that("tune wrorks", {
   )
 })
 
-# Test that custom functions work with tidymodels
+
+# custom functions ------------------------------------------------------------------------------------------------
+
 
 data(ames)
 

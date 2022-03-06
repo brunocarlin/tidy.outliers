@@ -32,7 +32,9 @@ Imports:
     tune,
     dials,
     dplyr,
-    stats
+    stats,
+    purrr,
+    outForest
 Remotes: 
     sevvandi/lookout
 VignetteBuilder: knitr
