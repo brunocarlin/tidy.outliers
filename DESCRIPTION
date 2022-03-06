@@ -1,13 +1,13 @@
 Package: tidy.outliers
 Title: What the Package Does (One Line, Title Case)
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     person(given = "Bruno",
            family = "Carlin",
            role = c("aut", "cre"),
            email = "brunotestaguzzat@gmail.com",
            comment = c(ORCID = "0000-0002-7701-2953"))
-Description: Creates two tipes of tidy steps for outliers: "probability" caluculation and outlier removal, the idea is that you can combine multiple methods and use them easily on a workflows modeling case.
+Description: Creates two tipes of tidy steps for outliers: "score" caluculation and outlier removal, the idea is that you can combine multiple scoring methods and use them easily on a workflows modeling case.
 License: MIT + file LICENSE
 Depends:
   R (>= 4.0.0)
@@ -35,7 +35,8 @@ Imports:
     purrr,
     h2o,
     lookout,
-    outForest
+    outForest,
+    tidyr
 Remotes: 
     sevvandi/lookout
 VignetteBuilder: knitr

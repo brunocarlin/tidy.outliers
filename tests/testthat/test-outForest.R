@@ -93,3 +93,12 @@ test_that("custom functions are changing the results", {
   expect_identical(max(non_zeroes), min(non_zeroes))
 })
 # Test passed
+
+
+# tunable ---------------------------------------------------------------------------------------------------------
+
+test_that("There are tunable components", {
+  expect_gt(rec_obj |> tunable() |> nrow(),
+                   0)
+})
+

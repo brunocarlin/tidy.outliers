@@ -262,6 +262,19 @@ tidy.step_outliers_outForest <- function(x, ...) {
   res
 }
 
+
+#' @export
+tunable.step_outliers_outForest <- function(x, ...) {
+  outlier_score_function <- tibble::tibble(
+    name = c("outlier_score_function"),
+    call_info = list(list(pkg = "tidy.outliers", fun = "aggregation")),
+    source = "recipe",
+    component = "step_outliers_outForest",
+    component_id = x$id
+  )
+  dplyr::bind_rows(outlier_score_function)
+}
+
 required_pkgs.step_outliers_outForest <- function(x, ...) {
   c("outForest")
 }
