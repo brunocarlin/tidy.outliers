@@ -40,13 +40,16 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/step_outliers_forest.html</loc>
+    <loc>/reference/step_outliers_h2o.extendedIsolationForest.html</loc>
   </url>
   <url>
     <loc>/reference/step_outliers_lookout.html</loc>
   </url>
   <url>
     <loc>/reference/step_outliers_maha.html</loc>
+  </url>
+  <url>
+    <loc>/reference/step_outliers_outForest.html</loc>
   </url>
   <url>
     <loc>/reference/step_outliers_remove.html</loc>
