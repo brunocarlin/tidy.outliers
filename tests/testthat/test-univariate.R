@@ -23,7 +23,7 @@ test_scores(outlier_score)
 # Test Passed
 
 
-na_values_break_fun(step_outliers_maha)
+na_values_break_fun(step_outliers_univariate)
 # Test Passed
 
 
@@ -41,7 +41,7 @@ test_that("tidy probs work", {
 
 tidy_rec_obj_not_prep <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  step_outliers_univariate(all_numeric(), -all_outcomes()) %>%
   tidy(number = 1)
 
 test_that("tidy probs go to NA", {

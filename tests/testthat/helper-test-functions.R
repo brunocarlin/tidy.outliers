@@ -1,5 +1,5 @@
 test_scores <- function(outlier_score) {
-  test_that("probabilities make sense", {
+  test_that("scores make sense", {
     expect_gte(min(outlier_score), 0)
     expect_lte(min(outlier_score), 1)
     expect_false(any(is.na(outlier_score)))
