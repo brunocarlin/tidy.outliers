@@ -8,13 +8,13 @@ library(tidy.outliers)
 
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_univariate(all_numeric(), -all_outcomes(),combination_function = mean) %>%
+  step_outliers_ecdf(everything()) %>%
   prep(mtcars)
 
 
 juice_result <- juice(rec_obj)
 
-outlier_score <- juice_result$.outliers_univariate
+outlier_score <- juice_result$.outliers_ecdf
 
 
 # usual cases -----------------------------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ test_scores(outlier_score)
 # Test Passed
 
 
-na_values_break_fun(step_outliers_univariate)
+na_values_break_fun(step_outliers_ecdf)
 # Test Passed
 
 
@@ -41,7 +41,7 @@ test_that("tidy probs work", {
 
 tidy_rec_obj_not_prep <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_univariate(all_numeric(), -all_outcomes()) %>%
+  step_outliers_ecdf(everything()) %>%
   tidy(number = 1)
 
 test_that("tidy probs go to NA", {
