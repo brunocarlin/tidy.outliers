@@ -40,6 +40,9 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
+    <loc>/reference/step_outliers_ecdf.html</loc>
+  </url>
+  <url>
     <loc>/reference/step_outliers_h2o.extendedIsolationForest.html</loc>
   </url>
   <url>
