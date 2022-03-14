@@ -6,7 +6,7 @@
 \alias{tidy.outliers-package}
 \title{tidy.outliers: What the Package Does (One Line, Title Case)}
 \description{
-Creates two tipes of tidy steps for outliers: "probability" caluculation and outlier removal, the idea is that you can combine multiple methods and use them easily on a workflows modeling case.
+Creates two tipes of tidy steps for outliers: "score" caluculation and outlier removal, the idea is that you can combine multiple scoring methods and use them easily on a workflows modeling case.
 }
 \seealso{
 Useful links:

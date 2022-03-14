@@ -1,12 +1,12 @@
-#' Calculate the univariate outlier "score"
+#' Calculate the ecdf outlier "score"
 #'
-#' `step_outliers_univariate` creates a *specification* of a recipe
-#'  step that will calculate the outlier score using the user supplied outlier_function on a univariate basis
-#'  the combination is of multiple variables is handled  by the combination_function
+#' `step_outliers_ecdf` creates a *specification* of a recipe
+#'  step that will calculate the outlier score using the user supplied outlier_function on a ecdf basis
+#'  the combination is of multiple variables is handled  by the outcome
 #'
 #' @keywords datagen
 #' @concept preprocessing
-#' @importFrom tidyr pivot_longer
+#' @importFrom stats ecdf
 #' @inheritParams recipes::step_center
 #' @param ... One or more selector functions to choose which
 #'  variables will be transformed. See [selections()] for
@@ -16,9 +16,8 @@
 #' @param outlier_score a placeholder for the exit of this function don't change
 #' @param columns A character string of variable names that will
 #'  be populated (eventually) by the terms argument.
-#' @param name_mutate the name of the generated column with univariate scores
-#' @param outlier_function the function used on a column basis to calculate the outlier score.
-#' @param combination_function the function used on a row basis to combine different outlier function results.
+#' @param name_mutate the name of the generated column with ecdf scores
+#' @param outcome column to calculate the ecdf, the rest of the columns are used as groups
 #' @return An updated version of `recipe` with the new step
 #'  added to the sequence of existing steps (if any), with the name on `name_mutate` and the scores calculated. For the
 #'  `tidy` method, a tibble with columns `index` (the row indexes of the tibble) and `outlier_score` (the scores).
@@ -39,26 +38,22 @@
 #' library(tidy.outliers)
 #' rec_obj <-
 #'   recipe(mpg ~ ., data = mtcars) %>%
-#'   step_outliers_univariate(all_numeric(), -all_outcomes()) %>%
+#'   step_outliers_ecdf(everything()) %>%
 #'   prep(mtcars)
 #'
 #' juice(rec_obj)
 #'
 #' tidy(rec_obj, number = 1)
-step_outliers_univariate <- function(recipe,
-                               ...,
-                               role = NA,
-                               trained = FALSE,
-                               outlier_score = NULL,
-                               columns = NULL,
-                               name_mutate = ".outliers_univariate",
-                               outlier_function = \(x){
-                                 (percent_rank(x) - 0.5) |>
-                                   abs() * 2
-                               },
-                               combination_function = mean,
-                               skip = TRUE,
-                               id = rand_id("outliers_univariate")) {
+step_outliers_ecdf <- function(recipe,
+                                     ...,
+                                     role = NA,
+                                     trained = FALSE,
+                                     outlier_score = NULL,
+                                     columns = NULL,
+                                     name_mutate = ".outliers_ecdf",
+                                     outcome = NULL,
+                                     skip = TRUE,
+                                     id = rand_id("outliers_ecdf")) {
 
   ## The variable selectors are not immediately evaluated by using
   ##  the `quos()` function in `rlang`. `ellipse_check()` captures
@@ -67,15 +62,14 @@ step_outliers_univariate <- function(recipe,
 
   add_step(
     recipe,
-    step_outliers_univariate_new(
+    step_outliers_ecdf_new(
       terms = terms,
       trained = trained,
       role = role,
       outlier_score = outlier_score,
       columns = columns,
       name_mutate = name_mutate,
-      outlier_function = outlier_function,
-      combination_function = combination_function,
+      outcome = outcome,
       skip = skip,
       id = id
     )
@@ -84,49 +78,48 @@ step_outliers_univariate <- function(recipe,
 
 
 
-step_outliers_univariate_new <-
+step_outliers_ecdf_new <-
   function(terms,
            role,
            trained,
            outlier_score,
            columns,
            name_mutate,
-           outlier_function,
-           combination_function,
+           outcome,
            skip,
            id) {
     step(
-      subclass = "outliers_univariate",
+      subclass = "outliers_ecdf",
       terms = terms,
       role = role,
       trained = trained,
       outlier_score = outlier_score,
       columns = columns,
       name_mutate = name_mutate,
-      outlier_function = outlier_function,
-      combination_function = combination_function,
+      outcome = outcome,
       skip = skip,
       id = id
     )
   }
 
 
-get_train_score_univariate <- function(x,outlier_function,combination_function) {
+get_train_score_ecdf <- function(x,outcome) {
 
   res <- x |>
-    mutate(across(.cols = everything(),.fns = outlier_function)) |>
-    mutate(row = row_number()) |>
-    pivot_longer(-row) |>
-    group_by(row) |>
-    summarise(score = .data$value |> combination_function()) |>
-    pull(.data$score)
+    dplyr::group_by(dplyr::across(!outcome)) |>
+    dplyr::mutate(
+      dplyr::across(outcome,.fns = \(x) ecdf(x)(x))
+      ) |>
+    dplyr::ungroup() |>
+    dplyr::select(outcome) |>
+    dplyr::pull()
 
   return(res)
 }
 
 
 #' @export
-prep.step_outliers_univariate <- function(x, training, info = NULL, ...) {
+prep.step_outliers_ecdf <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
   ## You can add error trapping for non-numeric data here and so on.
 
@@ -145,28 +138,29 @@ prep.step_outliers_univariate <- function(x, training, info = NULL, ...) {
     ))
   }
 
+  if (x$outcome |> is.null()) {
+    outcome <- info |> dplyr::filter(.data$role == 'outcome') |> pull(.data$variable)
+  } else {
+    outcome <- x$outcome
+  }
 
-  outlier_score <- training[, col_names] %>% get_train_score_univariate(outlier_function = x$outlier_function,
-                                                                        combination_function = x$combination_function)
+  outlier_score <- training[, col_names] %>% get_train_score_ecdf(outcome)
 
-
-  step_outliers_univariate_new(
+  step_outliers_ecdf_new(
     terms = x$terms,
     role = x$role,
     trained = TRUE,
     outlier_score = outlier_score,
     columns = col_names,
     name_mutate = x$name_mutate,
-    outlier_function = x$outlier_function,
-    combination_function = x$combination_function,
+    outcome = outcome,
     skip = x$skip,
     id = x$id
   )
 }
 
-
 #' @export
-bake.step_outliers_univariate <- function(object, new_data, ...) {
+bake.step_outliers_ecdf <- function(object, new_data, ...) {
   new_data[[object$name_mutate]] <- object$outlier_score
 
   new_data
@@ -181,10 +175,10 @@ format_prob <- function(step_outlier) {
   )
 }
 
-#' @rdname step_outliers_univariate
-#' @param x A `step_outliers_univariate` object.
+#' @rdname step_outliers_ecdf
+#' @param x A `step_outliers_ecdf` object.
 #' @export
-tidy.step_outliers_univariate <- function(x, ...) {
+tidy.step_outliers_ecdf <- function(x, ...) {
   if (is_trained(x)) {
     res <- format_prob(x)
   } else {
