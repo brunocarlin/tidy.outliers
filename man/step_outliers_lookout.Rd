@@ -74,14 +74,14 @@ conducted outside of the training set.
 \examples{
 library(recipes)
 library(tidy.outliers)
-rec_obj <-
+rec <-
   recipe(mpg ~ ., data = mtcars) \%>\%
-  step_outliers_lookout(all_numeric(), -all_outcomes()) \%>\%
+  step_outliers_lookout(all_numeric_predictors()) \%>\%
   prep(mtcars)
 
-juice(rec_obj)
+bake(rec, new_data = NULL)
 
-tidy(rec_obj, number = 1)
+tidy(rec, number = 1)
 }
 \concept{preprocessing}
 \keyword{datagen}

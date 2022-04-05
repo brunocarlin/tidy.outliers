@@ -8,7 +8,7 @@ library(tidymodels)
 
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  step_outliers_maha(all_numeric_predictors()) %>%
   step_outliers_remove(contains(r"(.outliers)")) %>%
   prep(mtcars)
 
@@ -26,7 +26,7 @@ test_scores(aggregation_results_tbl)
 
 test_that("na values create an error", {
   expect_error(recipe(mpg ~ ., data = mtcars2) %>%
-    step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+    step_outliers_maha(all_numeric_predictors()) %>%
     step_outliers_remove(contains(r"(.outliers)")) %>%
     prep(mtcars2))
 })
@@ -44,7 +44,7 @@ test_that("juice results works", {
 
 tidy_rec_obj_not_prep <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  step_outliers_maha(all_numeric_predictors()) %>%
   step_outliers_remove(contains(r"(.outliers)")) %>%
   tidy(number = 2)
 
@@ -59,7 +59,7 @@ test_that("tidy not prepped works", {
 
 rec_obj_tune <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  step_outliers_maha(all_numeric_predictors()) %>%
   step_outliers_remove(contains(r"(.outliers)"), score_dropout = tune("dropout"))
 
 
@@ -86,7 +86,7 @@ data(ames)
 
 rec_obj_tune <-
   recipe(Sale_Price ~ Lot_Frontage + Lot_Area, data = ames) %>%
-  step_outliers_maha(all_numeric(), -all_outcomes()) %>%
+  step_outliers_maha(all_numeric_predictors()) %>%
   step_outliers_lookout(all_numeric(), -contains(r"(.outliers)"), -all_outcomes()) |>
   step_outliers_remove(contains(r"(.outliers)"),
     score_dropout = tune("dropout"),
