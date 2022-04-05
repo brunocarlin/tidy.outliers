@@ -7,7 +7,7 @@ library(tidy.outliers)
 
 rec_obj <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_lookout(all_numeric(), -all_outcomes()) %>%
+  step_outliers_lookout(all_numeric_predictors()) %>%
   prep(mtcars)
 
 
@@ -41,7 +41,7 @@ test_that("tidy probs work", {
 
 tidy_rec_obj_not_prep <-
   recipe(mpg ~ ., data = mtcars) %>%
-  step_outliers_lookout(all_numeric(), -all_outcomes()) %>%
+  step_outliers_lookout(all_numeric_predictors()) %>%
   tidy(number = 1)
 
 test_that("tidy probs go to NA", {
