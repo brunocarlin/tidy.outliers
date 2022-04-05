@@ -22,6 +22,7 @@ Simple methods:
 
 -   Univariate based function
 -   Mahalanobis distance
+-   ecdf
 
 Model Methods:
 
