@@ -43,6 +43,10 @@
 #' bake(rec, new_data = NULL)
 #'
 #' tidy(rec, number = 1)
+#'
+
+
+
 step_outliers_outForest <- function(recipe,
                                  ...,
                                  role = NA,
@@ -138,14 +142,14 @@ get_train_score_outForest <- function(x, args, original_result, outlier_score_fu
   out <- rlang::exec("outForest", data = x, !!!args)
 
   data_outliers <- out$outliers |>
-    as_tibble()
+    tibble::as_tibble()
 
   if (original_result) {
     nest_outlier <- data_outliers |>
-      nest_by(row)
+      dplyr::nest_by(row)
 
     res <- x |>
-      mutate(
+      dplyr::mutate(
         row = row_number(),
         col = NA_character_,
         observed = NA_real_,
@@ -156,10 +160,10 @@ get_train_score_outForest <- function(x, args, original_result, outlier_score_fu
         replacement = NA_real_,
         .keep = "none"
       ) |>
-      nest_by(row) |>
-      ungroup() |>
-      left_join(nest_outlier, by = "row") |>
-      mutate(score = if_else(map_lgl(.data$data.y, is.null), .data$data.x, .data$data.y), .keep = "none")
+      dplyr::nest_by(row) |>
+      dplyr::ungroup() |>
+      dplyr::left_join(nest_outlier, by = "row") |>
+      dplyr::mutate(score = if_else(map_lgl(.data$data.y, is.null), .data$data.x, .data$data.y), .keep = "none")
 
     return(res)
   }
@@ -177,7 +181,8 @@ get_train_score_outForest <- function(x, args, original_result, outlier_score_fu
     ) |>
     left_join(summarise_outlier, by = "row") |>
     mutate(score = coalesce(.data$outlier_score, .data$not_outlier_score)) |>
-    summarise(score = percent_rank(.data$score))
+    reframe(score = percent_rank(.data$score)) |>
+    pull(score)
 
   return(res)
 }
@@ -278,3 +283,6 @@ tunable.step_outliers_outForest <- function(x, ...) {
 required_pkgs.step_outliers_outForest <- function(x, ...) {
   c("outForest")
 }
+
+#' @import utils
+utils::globalVariables(c("score"))

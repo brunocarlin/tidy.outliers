@@ -13,8 +13,8 @@ step_outliers_outForest(
   outlier_score = NULL,
   columns = NULL,
   name_mutate = ".outliers_outForest",
-  options = list(formula = . ~ ., replace = c("pmm", "predictions", "NA", "no"), pmm.k
-    = 3, threshold = 3, max_n_outliers = Inf, max_prop_outliers = 1, min.node.size = 40,
+  options = list(formula = . ~ ., replace = c("pmm", "predictions", "NA", "no"), pmm.k =
+    3, threshold = 3, max_n_outliers = Inf, max_prop_outliers = 1, min.node.size = 40,
     allow_predictions = FALSE, impute_multivariate = TRUE, impute_multivariate_control =
     list(pmm.k = 3, num.trees = 50, maxiter = 3L), seed = NULL, verbose = 0),
   outlier_score_function = mean,
@@ -91,6 +91,7 @@ rec <-
 bake(rec, new_data = NULL)
 
 tidy(rec, number = 1)
+
 }
 \concept{preprocessing}
 \keyword{datagen}

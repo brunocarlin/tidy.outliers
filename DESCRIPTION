@@ -1,6 +1,6 @@
 Package: tidy.outliers
 Title: What the Package Does (One Line, Title Case)
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person(given = "Bruno",
            family = "Carlin",
@@ -21,14 +21,13 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 URL: https://github.com/brunocarlin/tidy.outliers
 BugReports: https://github.com/brunocarlin/tidy.outliers/issues
 Imports: 
     recipes,
     tibble,
     rlang,
-    tune,
     dials,
     dplyr,
     stats,

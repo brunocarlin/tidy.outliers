@@ -29,12 +29,12 @@ example_recipe <-
 ```
 
 
-Juice it. 
+Bake it with null. 
 
 ```{r}
 example_recipe |>
   prep() |> 
-  juice()
+  bake(new_data = NULL)
 ```
 You can even give it a new name!
 
@@ -44,7 +44,7 @@ example_feature <-
   recipe(. ~ .,data = mtcars) |>
   step_outliers_maha(all_numeric(),name_mutate = 'maha') |> 
   prep() |> 
-  juice()
+  bake(new_data = NULL)
 
 example_feature |> select(maha,everything())
 ```
