@@ -35,7 +35,8 @@ Imports:
     h2o,
     lookout,
     outForest,
-    tidyr
+    tidyr,
+    tune
 Remotes: 
     sevvandi/lookout
 VignetteBuilder: knitr
