@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidy.outliers</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -78,7 +78,8 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Integration with Tidymodel: Tune and Friends</h1>
+      <h1 data-toc-skip>Integration with Tidymodel: Tune and
+Friends</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/brunocarlin/tidy.outliers/blob/HEAD/vignettes/articles/integration_tidymodels.Rmd" class="external-link"><code>vignettes/articles/integration_tidymodels.Rmd</code></a></small>
@@ -89,177 +90,180 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/brunocarlin/tidy.outliers" class="external-link">tidy.outliers</a></span><span class="op">)</span></code></pre></div>
-<p>The most central aspect of tidy.outliers is to combine it on a workflow to filter outliers out of your training dataset, and to consider the outlier removal process just one of your many dials controlled hyper parameters, you can even ‘pool’ the score out of multiple outlier methods!</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/brunocarlin/tidy.outliers" class="external-link">tidy.outliers</a></span><span class="op">)</span></span></code></pre></div>
+<p>The most central aspect of tidy.outliers is to combine it on a
+workflow to filter outliers out of your training dataset, and to
+consider the outlier removal process just one of your many dials
+controlled hyper parameters, you can even ‘pool’ the score out of
+multiple outlier methods!</p>
 <div class="section level2">
 <h2 id="load-tidymodels">Load tidymodels<a class="anchor" aria-label="anchor" href="#load-tidymodels"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidymodels.tidymodels.org" class="external-link">tidymodels</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidymodels.tidymodels.org" class="external-link">tidymodels</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="get-data">Get data<a class="anchor" aria-label="anchor" href="#get-data"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ames</span><span class="op">)</span>
-
-
-<span class="va">data_split</span> <span class="op">&lt;-</span> <span class="va">ames</span> |&gt;
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Sale_Price <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">Sale_Price</span><span class="op">)</span><span class="op">)</span> |&gt;
-  <span class="fu">initial_split</span><span class="op">(</span>strata <span class="op">=</span> <span class="va">Sale_Price</span><span class="op">)</span>
-<span class="va">ames_train</span> <span class="op">&lt;-</span> <span class="fu">training</span><span class="op">(</span><span class="va">data_split</span><span class="op">)</span>
-<span class="va">ames_test</span>  <span class="op">&lt;-</span> <span class="fu">testing</span><span class="op">(</span><span class="va">data_split</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ames</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">data_split</span> <span class="op">&lt;-</span> <span class="va">ames</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Sale_Price <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">Sale_Price</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">initial_split</span><span class="op">(</span>strata <span class="op">=</span> <span class="va">Sale_Price</span><span class="op">)</span></span>
+<span><span class="va">ames_train</span> <span class="op">&lt;-</span> <span class="fu">training</span><span class="op">(</span><span class="va">data_split</span><span class="op">)</span></span>
+<span><span class="va">ames_test</span>  <span class="op">&lt;-</span> <span class="fu">testing</span><span class="op">(</span><span class="va">data_split</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="create-the-recipe">Create the recipe<a class="anchor" aria-label="anchor" href="#create-the-recipe"></a>
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ames_rec</span> <span class="op">&lt;-</span> 
-  <span class="fu"><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipe</a></span><span class="op">(</span><span class="va">Sale_Price</span> <span class="op">~</span> <span class="va">Gr_Liv_Area</span> <span class="op">+</span> <span class="va">Longitude</span> <span class="op">+</span> <span class="va">Latitude</span>, data <span class="op">=</span> <span class="va">ames_train</span><span class="op">)</span> |&gt; 
-  <span class="fu"><a href="https://recipes.tidymodels.org/reference/step_log.html" class="external-link">step_log</a></span><span class="op">(</span><span class="va">Gr_Liv_Area</span>, base <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> |&gt; 
-  <span class="fu"><a href="https://recipes.tidymodels.org/reference/step_ns.html" class="external-link">step_ns</a></span><span class="op">(</span><span class="va">Longitude</span>, deg_free <span class="op">=</span> <span class="fu">tune</span><span class="op">(</span><span class="st">"long df"</span><span class="op">)</span><span class="op">)</span> |&gt; 
-  <span class="fu"><a href="https://recipes.tidymodels.org/reference/step_ns.html" class="external-link">step_ns</a></span><span class="op">(</span><span class="va">Latitude</span>,  deg_free <span class="op">=</span> <span class="fu">tune</span><span class="op">(</span><span class="st">"lat df"</span><span class="op">)</span><span class="op">)</span> |&gt; 
-  <span class="fu"><a href="../reference/step_outliers_maha.html">step_outliers_maha</a></span><span class="op">(</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_numeric</a></span><span class="op">(</span><span class="op">)</span>, <span class="op">-</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_outcomes</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> |&gt;
-  <span class="fu"><a href="../reference/step_outliers_lookout.html">step_outliers_lookout</a></span><span class="op">(</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_numeric</a></span><span class="op">(</span><span class="op">)</span>,<span class="op">-</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">r"(.outliers)"</span><span class="op">)</span>,<span class="op">-</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_outcomes</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> |&gt; 
-  <span class="fu"><a href="../reference/step_outliers_remove.html">step_outliers_remove</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">r"(.outliers)"</span><span class="op">)</span>,score_dropout <span class="op">=</span> <span class="fu">tune</span><span class="op">(</span><span class="st">"dropout"</span><span class="op">)</span>,aggregation_function <span class="op">=</span> <span class="fu">tune</span><span class="op">(</span><span class="st">"aggregation"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ames_rec</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipe</a></span><span class="op">(</span><span class="va">Sale_Price</span> <span class="op">~</span> <span class="va">Gr_Liv_Area</span> <span class="op">+</span> <span class="va">Longitude</span> <span class="op">+</span> <span class="va">Latitude</span>, data <span class="op">=</span> <span class="va">ames_train</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://recipes.tidymodels.org/reference/step_log.html" class="external-link">step_log</a></span><span class="op">(</span><span class="va">Gr_Liv_Area</span>, base <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://recipes.tidymodels.org/reference/step_ns.html" class="external-link">step_ns</a></span><span class="op">(</span><span class="va">Longitude</span>, deg_free <span class="op">=</span> <span class="fu">tune</span><span class="op">(</span><span class="st">"long df"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://recipes.tidymodels.org/reference/step_ns.html" class="external-link">step_ns</a></span><span class="op">(</span><span class="va">Latitude</span>,  deg_free <span class="op">=</span> <span class="fu">tune</span><span class="op">(</span><span class="st">"lat df"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/step_outliers_maha.html">step_outliers_maha</a></span><span class="op">(</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_numeric</a></span><span class="op">(</span><span class="op">)</span>, <span class="op">-</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_outcomes</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/step_outliers_lookout.html">step_outliers_lookout</a></span><span class="op">(</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_numeric</a></span><span class="op">(</span><span class="op">)</span>,<span class="op">-</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">r"(.outliers)"</span><span class="op">)</span>,<span class="op">-</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_outcomes</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/step_outliers_remove.html">step_outliers_remove</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span><span class="st">r"(.outliers)"</span><span class="op">)</span>,score_dropout <span class="op">=</span> <span class="fu">tune</span><span class="op">(</span><span class="st">"dropout"</span><span class="op">)</span>,aggregation_function <span class="op">=</span> <span class="fu">tune</span><span class="op">(</span><span class="st">"aggregation"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="see-the-parameters">See the parameters<a class="anchor" aria-label="anchor" href="#see-the-parameters"></a>
 </h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">parameters</span><span class="op">(</span><span class="va">ames_rec</span><span class="op">)</span>
-<span class="co">#&gt; Warning: `parameters.workflow()` was deprecated in tune 0.1.6.9003.</span>
-<span class="co">#&gt; Please use `hardhat::extract_parameter_set_dials()` instead.</span>
-<span class="co">#&gt; Collection of 4 parameters for tuning</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;   identifier                 type    object</span>
-<span class="co">#&gt;      long df             deg_free nparam[+]</span>
-<span class="co">#&gt;       lat df             deg_free nparam[+]</span>
-<span class="co">#&gt;      dropout        score_dropout nparam[+]</span>
-<span class="co">#&gt;  aggregation aggregation_function dparam[+]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">parameters</span><span class="op">(</span><span class="va">ames_rec</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: `parameters.workflow()` was deprecated in tune 0.1.6.9003.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use `hardhat::extract_parameter_set_dials()` instead.</span></span>
+<span><span class="co">#&gt; Collection of 4 parameters for tuning</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   identifier                 type    object</span></span>
+<span><span class="co">#&gt;      long df             deg_free nparam[+]</span></span>
+<span><span class="co">#&gt;       lat df             deg_free nparam[+]</span></span>
+<span><span class="co">#&gt;      dropout        score_dropout nparam[+]</span></span>
+<span><span class="co">#&gt;  aggregation aggregation_function dparam[+]</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="there-is-already-a-function-for-dropouts-implemented-by-dials">There is already a function for dropouts implemented by dials<a class="anchor" aria-label="anchor" href="#there-is-already-a-function-for-dropouts-implemented-by-dials"></a>
 </h2>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ames_param</span> <span class="op">&lt;-</span> 
-  <span class="va">ames_rec</span> |&gt; 
-  <span class="fu">parameters</span><span class="op">(</span><span class="op">)</span> |&gt; 
-  <span class="fu"><a href="https://rdrr.io/r/stats/update.html" class="external-link">update</a></span><span class="op">(</span>
-    `long df` <span class="op">=</span> <span class="fu">spline_degree</span><span class="op">(</span><span class="op">)</span>, 
-    `lat df` <span class="op">=</span> <span class="fu">spline_degree</span><span class="op">(</span><span class="op">)</span>,
-    dropout <span class="op">=</span> <span class="fu">dropout</span><span class="op">(</span>range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,
-    aggregation <span class="op">=</span> <span class="fu"><a href="../reference/aggregation.html">aggregation</a></span><span class="op">(</span><span class="op">)</span> |&gt; <span class="fu">value_set</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean"</span>,<span class="st">"weighted_mean"</span><span class="op">)</span><span class="op">)</span>
-  <span class="op">)</span>
-<span class="co">#&gt; Warning: `parameters.workflow()` was deprecated in tune 0.1.6.9003.</span>
-<span class="co">#&gt; Please use `hardhat::extract_parameter_set_dials()` instead.</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ames_param</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">ames_rec</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">parameters</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/update.html" class="external-link">update</a></span><span class="op">(</span></span>
+<span>    `long df` <span class="op">=</span> <span class="fu">spline_degree</span><span class="op">(</span><span class="op">)</span>, </span>
+<span>    `lat df` <span class="op">=</span> <span class="fu">spline_degree</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    dropout <span class="op">=</span> <span class="fu">dropout</span><span class="op">(</span>range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    aggregation <span class="op">=</span> <span class="fu"><a href="../reference/aggregation.html">aggregation</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">value_set</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean"</span>,<span class="st">"weighted_mean"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="create-weighted_mean-func">Create weighted_mean func<a class="anchor" aria-label="anchor" href="#create-weighted_mean-func"></a>
 </h2>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">weighted_mean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">x</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">*</span> <span class="fl">.75</span> <span class="op">+</span> <span class="va">x</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">*</span> <span class="fl">.25</span>
-<span class="op">}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">weighted_mean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">*</span> <span class="fl">.75</span> <span class="op">+</span> <span class="va">x</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">*</span> <span class="fl">.25</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="grid-search-picks-random-points">Grid Search picks random points<a class="anchor" aria-label="anchor" href="#grid-search-picks-random-points"></a>
 </h2>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">spline_grid</span> <span class="op">&lt;-</span> <span class="fu">grid_max_entropy</span><span class="op">(</span><span class="va">ames_param</span>, size <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>
-<span class="va">spline_grid</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 20 × 4</span></span>
-<span class="co">#&gt;    `long df` `lat df` dropout aggregation  </span>
-<span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>         6        3   0.830 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>         9        3   0.993 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>         9        5   0.765 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         2        5   0.873 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         9        8   0.857 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         6        8   0.795 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         8        6   0.860 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         9        9   0.964 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         6        6   0.936 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>         2        6   0.753 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">11</span>         9       10   0.996 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">12</span>         1        1   0.819 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">13</span>        10        4   0.926 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">14</span>         9        5   0.844 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">15</span>         2        5   0.989 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">16</span>         5        2   0.963 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">17</span>         1        7   0.817 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">18</span>         4       10   0.981 weighted_mean</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">19</span>         9        1   0.843 mean         </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">20</span>         3        3   0.883 mean</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">spline_grid</span> <span class="op">&lt;-</span> <span class="fu">grid_max_entropy</span><span class="op">(</span><span class="va">ames_param</span>, size <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="va">spline_grid</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 20 × 4</span></span></span>
+<span><span class="co">#&gt;    `long df` `lat df` dropout aggregation  </span></span>
+<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>        10        5   0.893 mean         </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>         6       10   0.793 weighted_mean</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>         5        8   0.890 mean         </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         4        6   0.969 mean         </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         3        6   0.778 mean         </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         2        4   0.974 weighted_mean</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         5        6   0.785 weighted_mean</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         1        1   1.00  weighted_mean</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         7        8   0.773 mean         </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>         5        3   0.870 weighted_mean</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span>         6        3   0.792 weighted_mean</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span>        10        3   0.968 weighted_mean</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span>         6        7   0.973 mean         </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span>         3        2   0.940 mean         </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span>         8        6   0.864 weighted_mean</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span>        10        4   0.761 weighted_mean</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">17</span>        10        2   0.831 weighted_mean</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">18</span>         7       10   0.948 weighted_mean</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">19</span>         8        1   0.990 mean         </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">20</span>         1       10   0.765 weighted_mean</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="create-a-simple-model">Create a simple model<a class="anchor" aria-label="anchor" href="#create-a-simple-model"></a>
 </h2>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">lin_mod</span> <span class="op">&lt;-</span>
-  <span class="fu">linear_reg</span><span class="op">(</span><span class="op">)</span> |&gt;
-  <span class="fu">set_engine</span><span class="op">(</span><span class="st">"lm"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">lin_mod</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu">linear_reg</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">set_engine</span><span class="op">(</span><span class="st">"lm"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="create-a-simple-workflow">Create a simple workflow<a class="anchor" aria-label="anchor" href="#create-a-simple-workflow"></a>
 </h2>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">wf_tune</span> <span class="op">&lt;-</span> <span class="fu">workflow</span><span class="op">(</span><span class="op">)</span> |&gt;
-  <span class="fu">add_recipe</span><span class="op">(</span><span class="va">ames_rec</span><span class="op">)</span> |&gt; 
-  <span class="fu">add_model</span><span class="op">(</span><span class="va">lin_mod</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="va">wf_tune</span> <span class="op">&lt;-</span> <span class="fu">workflow</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">add_recipe</span><span class="op">(</span><span class="va">ames_rec</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">add_model</span><span class="op">(</span><span class="va">lin_mod</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="create-training-folds">Create training folds<a class="anchor" aria-label="anchor" href="#create-training-folds"></a>
 </h2>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2453</span><span class="op">)</span>
-<span class="va">cv_splits</span> <span class="op">&lt;-</span> <span class="fu">vfold_cv</span><span class="op">(</span><span class="va">ames_train</span>, v <span class="op">=</span> <span class="fl">5</span>, strata <span class="op">=</span> <span class="va">Sale_Price</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2453</span><span class="op">)</span></span>
+<span><span class="va">cv_splits</span> <span class="op">&lt;-</span> <span class="fu">vfold_cv</span><span class="op">(</span><span class="va">ames_train</span>, v <span class="op">=</span> <span class="fl">5</span>, strata <span class="op">=</span> <span class="va">Sale_Price</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="tune-the-grid">Tune the grid<a class="anchor" aria-label="anchor" href="#tune-the-grid"></a>
 </h2>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ames_res</span> <span class="op">&lt;-</span> <span class="fu">tune_grid</span><span class="op">(</span><span class="va">wf_tune</span>, resamples <span class="op">=</span> <span class="va">cv_splits</span>, grid <span class="op">=</span> <span class="va">spline_grid</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ames_res</span> <span class="op">&lt;-</span> <span class="fu">tune_grid</span><span class="op">(</span><span class="va">wf_tune</span>, resamples <span class="op">=</span> <span class="va">cv_splits</span>, grid <span class="op">=</span> <span class="va">spline_grid</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">estimates</span> <span class="op">&lt;-</span> <span class="fu">collect_metrics</span><span class="op">(</span><span class="va">ames_res</span><span class="op">)</span>
-
-<span class="va">rmse_vals</span> <span class="op">&lt;-</span> 
-  <span class="va">estimates</span> |&gt; 
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.metric</span> <span class="op">==</span> <span class="st">"rmse"</span><span class="op">)</span> |&gt; 
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">mean</span><span class="op">)</span>
-<span class="va">rmse_vals</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 20 × 10</span></span>
-<span class="co">#&gt;    `long df` `lat df` dropout aggregation   .metric .estimator   mean     n</span>
-<span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>         9        9   0.964 weighted_mean rmse    standard   0.097<span style="text-decoration: underline;">2</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>         9       10   0.996 mean          rmse    standard   0.097<span style="text-decoration: underline;">3</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>         9        8   0.857 weighted_mean rmse    standard   0.097<span style="text-decoration: underline;">7</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         6        8   0.795 weighted_mean rmse    standard   0.098<span style="text-decoration: underline;">2</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         4       10   0.981 weighted_mean rmse    standard   0.098<span style="text-decoration: underline;">3</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         9        5   0.844 weighted_mean rmse    standard   0.099<span style="text-decoration: underline;">9</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         8        6   0.860 mean          rmse    standard   0.099<span style="text-decoration: underline;">9</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         9        5   0.765 mean          rmse    standard   0.099<span style="text-decoration: underline;">9</span>     5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         6        6   0.936 weighted_mean rmse    standard   0.100      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span>         9        3   0.993 weighted_mean rmse    standard   0.100      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">11</span>        10        4   0.926 mean          rmse    standard   0.100      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">12</span>         1        7   0.817 mean          rmse    standard   0.101      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">13</span>         2        5   0.989 mean          rmse    standard   0.101      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">14</span>         6        3   0.830 weighted_mean rmse    standard   0.101      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">15</span>         5        2   0.963 mean          rmse    standard   0.101      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">16</span>         2        5   0.873 weighted_mean rmse    standard   0.102      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">17</span>         3        3   0.883 mean          rmse    standard   0.102      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">18</span>         2        6   0.753 weighted_mean rmse    standard   0.104      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">19</span>         9        1   0.843 mean          rmse    standard   0.110      5</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">20</span>         1        1   0.819 mean          rmse    standard   0.116      5</span>
-<span class="co">#&gt; <span style="color: #949494;"># … with 2 more variables: std_err &lt;dbl&gt;, .config &lt;chr&gt;</span></span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="va">estimates</span> <span class="op">&lt;-</span> <span class="fu">collect_metrics</span><span class="op">(</span><span class="va">ames_res</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">rmse_vals</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">estimates</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.metric</span> <span class="op">==</span> <span class="st">"rmse"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">mean</span><span class="op">)</span></span>
+<span><span class="va">rmse_vals</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 20 × 10</span></span></span>
+<span><span class="co">#&gt;    long d…¹ lat d…² dropout aggre…³ .metric .esti…⁴   mean     n std_err .config</span></span>
+<span><span class="co">#&gt;       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>        7      10   0.948 weight… rmse    standa… 0.097<span style="text-decoration: underline;">8</span>     5 0.002<span style="text-decoration: underline;">42</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>        5       8   0.890 mean    rmse    standa… 0.097<span style="text-decoration: underline;">9</span>     5 0.002<span style="text-decoration: underline;">24</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>        6      10   0.793 weight… rmse    standa… 0.097<span style="text-decoration: underline;">9</span>     5 0.002<span style="text-decoration: underline;">42</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>        7       8   0.773 mean    rmse    standa… 0.097<span style="text-decoration: underline;">9</span>     5 0.002<span style="text-decoration: underline;">31</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>        1      10   0.765 weight… rmse    standa… 0.098<span style="text-decoration: underline;">6</span>     5 0.002<span style="text-decoration: underline;">16</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>        6       7   0.973 mean    rmse    standa… 0.099<span style="text-decoration: underline;">3</span>     5 0.001<span style="text-decoration: underline;">99</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>        8       6   0.864 weight… rmse    standa… 0.099<span style="text-decoration: underline;">4</span>     5 0.001<span style="text-decoration: underline;">77</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>       10       5   0.893 mean    rmse    standa… 0.099<span style="text-decoration: underline;">7</span>     5 0.001<span style="text-decoration: underline;">83</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>        5       6   0.785 weight… rmse    standa… 0.099<span style="text-decoration: underline;">9</span>     5 0.001<span style="text-decoration: underline;">99</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>       10       3   0.968 weight… rmse    standa… 0.100      5 0.002<span style="text-decoration: underline;">04</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span>        4       6   0.969 mean    rmse    standa… 0.100      5 0.001<span style="text-decoration: underline;">84</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span>        5       3   0.870 weight… rmse    standa… 0.100      5 0.002<span style="text-decoration: underline;">17</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span>       10       4   0.761 weight… rmse    standa… 0.101      5 0.002<span style="text-decoration: underline;">20</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span>        3       6   0.778 mean    rmse    standa… 0.101      5 0.001<span style="text-decoration: underline;">70</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span>        6       3   0.792 weight… rmse    standa… 0.101      5 0.002<span style="text-decoration: underline;">14</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span>       10       2   0.831 weight… rmse    standa… 0.101      5 0.002<span style="text-decoration: underline;">18</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">17</span>        2       4   0.974 weight… rmse    standa… 0.101      5 0.001<span style="text-decoration: underline;">93</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">18</span>        3       2   0.940 mean    rmse    standa… 0.102      5 0.002<span style="text-decoration: underline;">06</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">19</span>        8       1   0.990 mean    rmse    standa… 0.107      5 0.002<span style="text-decoration: underline;">15</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">20</span>        1       1   1.00  weight… rmse    standa… 0.114      5 0.001<span style="text-decoration: underline;">75</span> Prepro…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with abbreviated variable names ¹​`long df`, ²​`lat df`, ³​aggregation,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   ⁴​.estimator</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="plot-it">Plot it<a class="anchor" aria-label="anchor" href="#plot-it"></a>
 </h2>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">autoplot</span><span class="op">(</span><span class="va">ames_res</span>,metric <span class="op">=</span> <span class="st">"rmse"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">autoplot</span><span class="op">(</span><span class="va">ames_res</span>,metric <span class="op">=</span> <span class="st">"rmse"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="integration_tidymodels_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
   </div>
@@ -281,7 +285,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

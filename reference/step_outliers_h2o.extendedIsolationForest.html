@@ -18,7 +18,7 @@ step that will calculate the outlier score using h2o.extendedIsolationForest fro
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidy.outliers</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -65,22 +65,22 @@ step that will calculate the outlier score using h2o.extendedIsolationForest fro
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">step_outliers_h2o.extendedIsolationForest</span><span class="op">(</span>
-  <span class="va">recipe</span>,
-  <span class="va">...</span>,
-  role <span class="op">=</span> <span class="cn">NA</span>,
-  trained <span class="op">=</span> <span class="cn">FALSE</span>,
-  outlier_score <span class="op">=</span> <span class="cn">NULL</span>,
-  columns <span class="op">=</span> <span class="cn">NULL</span>,
-  name_mutate <span class="op">=</span> <span class="st">".outliers_h2o.extendedIsolationForest"</span>,
-  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>extension_level <span class="op">=</span> <span class="st">"max"</span><span class="op">)</span>,
-  init_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,
-  skip <span class="op">=</span> <span class="cn">TRUE</span>,
-  id <span class="op">=</span> <span class="fu"><a href="https://recipes.tidymodels.org/reference/rand_id.html" class="external-link">rand_id</a></span><span class="op">(</span><span class="st">"outliers_h2o.extendedIsolationForest"</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="co"># S3 method for step_outliers_h2o.extendedIsolationForest</span>
-<span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_outliers_h2o.extendedIsolationForest</span><span class="op">(</span></span>
+<span>  <span class="va">recipe</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  role <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  trained <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  outlier_score <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  name_mutate <span class="op">=</span> <span class="st">".outliers_h2o.extendedIsolationForest"</span>,</span>
+<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>extension_level <span class="op">=</span> <span class="st">"max"</span><span class="op">)</span>,</span>
+<span>  init_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  skip <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  id <span class="op">=</span> <span class="fu"><a href="https://recipes.tidymodels.org/reference/rand_id.html" class="external-link">rand_id</a></span><span class="op">(</span><span class="st">"outliers_h2o.extendedIsolationForest"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for step_outliers_h2o.extendedIsolationForest</span></span>
+<span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -88,25 +88,43 @@ step that will calculate the outlier score using h2o.extendedIsolationForest fro
     <dl><dt>recipe</dt>
 <dd><p>A recipe object. The step will be added to the
 sequence of operations for this recipe.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>One or more selector functions to choose variables
 for this step. See <code><a href="https://recipes.tidymodels.org/reference/selections.html" class="external-link">selections()</a></code> for more details.</p></dd>
+
+
 <dt>role</dt>
 <dd><p>not defined for this function</p></dd>
+
+
 <dt>trained</dt>
 <dd><p>A logical to indicate if the quantities for
 preprocessing have been estimated.</p></dd>
+
+
 <dt>outlier_score</dt>
 <dd><p>a placeholder for the exit of this function don't change</p></dd>
+
+
 <dt>columns</dt>
 <dd><p>A character string of variable names that will
 be populated (eventually) by the terms argument.</p></dd>
+
+
 <dt>name_mutate</dt>
 <dd><p>the name of the generated column with h2o.extendedIsolationForest scores</p></dd>
+
+
 <dt>options</dt>
 <dd><p>a list with arguments to  <a href="https://rdrr.io/pkg/h2o/man/h2o.extendedIsolationForest.html" class="external-link">h2o::h2o.extendedIsolationForest</a> function.</p></dd>
+
+
 <dt>init_options</dt>
 <dd><p>a list with parameters to <a href="https://rdrr.io/pkg/h2o/man/h2o.init.html" class="external-link">h2o::h2o.init</a></p></dd>
+
+
 <dt>skip</dt>
 <dd><p>A logical. Should the step be skipped when the
 recipe is baked by <code><a href="https://recipes.tidymodels.org/reference/bake.html" class="external-link">bake()</a></code>? While all operations are baked
@@ -114,14 +132,21 @@ when <code><a href="https://recipes.tidymodels.org/reference/prep.html" class="e
 conducted on new data (e.g. processing the outcome variable(s)).
 Care should be taken when using <code>skip = TRUE</code> as it may affect
 the computations for subsequent operations.</p></dd>
+
+
 <dt>id</dt>
 <dd><p>A character string that is unique to this step to identify it.</p></dd>
+
+
 <dt>x</dt>
 <dd><p>A <code>step_outliers_h2o.extendedIsolationForest</code> object.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An updated version of <code>recipe</code> with the new step
+    
+
+<p>An updated version of <code>recipe</code> with the new step
 added to the sequence of existing steps (if any), with the name on <code>name_mutate</code> and the scores calculated. For the
 <code>tidy</code> method, a tibble with columns <code>index</code> (the row indexes of the tibble) and <code>outlier_score</code> (the scores).</p>
     </div>
@@ -136,29 +161,29 @@ conducted outside of the training set.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tidymodels/recipes" class="external-link">recipes</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/brunocarlin/tidy.outliers" class="external-link">tidy.outliers</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="va">rec</span> <span class="op">&lt;-</span></span>
-<span class="r-in">  <span class="fu"><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipe</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span class="r-in">  <span class="fu">step_outliers_h2o.extendedIsolationForest</span><span class="op">(</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_predictors</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span class="r-in">  <span class="fu"><a href="https://recipes.tidymodels.org/reference/prep.html" class="external-link">prep</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tidymodels/recipes" class="external-link">recipes</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/brunocarlin/tidy.outliers" class="external-link">tidy.outliers</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://recipes.tidymodels.org/reference/recipe.html" class="external-link">recipe</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu">step_outliers_h2o.extendedIsolationForest</span><span class="op">(</span><span class="fu"><a href="https://recipes.tidymodels.org/reference/has_role.html" class="external-link">all_predictors</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://recipes.tidymodels.org/reference/prep.html" class="external-link">prep</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> H2O is not running yet, starting it now...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Note:  In case of errors look at the following log files:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpWWJCYN/file3b365c21a0d7/h2o_runner_started_from_r.out</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpWWJCYN/file3b3623c6b282/h2o_runner_started_from_r.err</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpAkhFmm/file21a0138aa5d7/h2o_runner_started_from_r.out</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpAkhFmm/file21a0738dd046/h2o_runner_started_from_r.err</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Starting H2O JVM and connecting: ... Connection successful!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> R is connected to the H2O cluster: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster uptime:         2 seconds 923 milliseconds </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster uptime:         4 seconds 80 milliseconds </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster timezone:       UTC </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O data parsing timezone:  UTC </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster version:        3.36.0.3 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster version age:    1 month and 19 days  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster name:           H2O_started_from_R_runner_pok721 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster version:        3.38.0.1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster version age:    4 months and 26 days !!! </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster name:           H2O_started_from_R_runner_yrs698 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster total nodes:    1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster total memory:   3.10 GB </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O cluster total cores:    3 </span>
@@ -168,43 +193,46 @@ conducted outside of the training set.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O Connection port:        54321 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O Connection proxy:       NA </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     H2O Internal Security:      FALSE </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     R Version:                  R version 4.1.3 (2022-03-10) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     R Version:                  R version 4.2.2 (2022-10-31) </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Your H2O cluster version is too old (4 months and 26 days)!</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Please download and install the latest version from http://h2o.ai/download/</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://recipes.tidymodels.org/reference/bake.html" class="external-link">bake</a></span><span class="op">(</span><span class="va">rec</span>, new_data <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://recipes.tidymodels.org/reference/bake.html" class="external-link">bake</a></span><span class="op">(</span><span class="va">rec</span>, new_data <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 32 × 12</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb   mpg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     6  160    110  3.9   2.62  16.5     0     1     4     4  21  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     6  160    110  3.9   2.88  17.0     0     1     4     4  21  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     4  108     93  3.85  2.32  18.6     1     1     4     1  22.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     6  258    110  3.08  3.22  19.4     1     0     3     1  21.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     8  360    175  3.15  3.44  17.0     0     0     3     2  18.7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     6  225    105  2.76  3.46  20.2     1     0     3     1  18.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     8  360    245  3.21  3.57  15.8     0     0     3     4  14.3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     4  147.    62  3.69  3.19  20       1     0     4     2  24.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     4  141.    95  3.92  3.15  22.9     1     0     4     2  22.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     6  168.   123  3.92  3.44  18.3     1     0     4     4  19.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 22 more rows, and 1 more variable:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   .outliers_h2o.extendedIsolationForest &lt;dbl&gt;</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="va">rec</span>, number <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb   mpg .outliers…¹</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     6  160    110  3.9   2.62  16.5     0     1     4     4  21         0.390</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     6  160    110  3.9   2.88  17.0     0     1     4     4  21         0.389</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     4  108     93  3.85  2.32  18.6     1     1     4     1  22.8       0.414</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     6  258    110  3.08  3.22  19.4     1     0     3     1  21.4       0.440</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     8  360    175  3.15  3.44  17.0     0     0     3     2  18.7       0.448</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     6  225    105  2.76  3.46  20.2     1     0     3     1  18.1       0.435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     8  360    245  3.21  3.57  15.8     0     0     3     4  14.3       0.451</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     4  147.    62  3.69  3.19  20       1     0     4     2  24.4       0.473</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     4  141.    95  3.92  3.15  22.9     1     0     4     2  22.8       0.406</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     6  168.   123  3.92  3.44  18.3     1     0     4     4  19.2       0.401</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 22 more rows, and abbreviated variable name</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ¹​.outliers_h2o.extendedIsolationForest</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="va">rec</span>, number <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 32 × 3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    index outlier_score id                                        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     1         0.394 outliers_h2o.extendedIsolationForest_bkCOG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     2         0.392 outliers_h2o.extendedIsolationForest_bkCOG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     3         0.416 outliers_h2o.extendedIsolationForest_bkCOG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     4         0.444 outliers_h2o.extendedIsolationForest_bkCOG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     5         0.450 outliers_h2o.extendedIsolationForest_bkCOG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     6         0.429 outliers_h2o.extendedIsolationForest_bkCOG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     7         0.444 outliers_h2o.extendedIsolationForest_bkCOG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     8         0.457 outliers_h2o.extendedIsolationForest_bkCOG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     9         0.415 outliers_h2o.extendedIsolationForest_bkCOG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    10         0.400 outliers_h2o.extendedIsolationForest_bkCOG</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     1         0.390 outliers_h2o.extendedIsolationForest_bAnZj</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     2         0.389 outliers_h2o.extendedIsolationForest_bAnZj</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     3         0.414 outliers_h2o.extendedIsolationForest_bAnZj</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     4         0.440 outliers_h2o.extendedIsolationForest_bAnZj</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     5         0.448 outliers_h2o.extendedIsolationForest_bAnZj</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     6         0.435 outliers_h2o.extendedIsolationForest_bAnZj</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     7         0.451 outliers_h2o.extendedIsolationForest_bAnZj</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     8         0.473 outliers_h2o.extendedIsolationForest_bAnZj</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     9         0.406 outliers_h2o.extendedIsolationForest_bAnZj</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    10         0.401 outliers_h2o.extendedIsolationForest_bAnZj</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 22 more rows</span></span>
 </code></pre></div>
     </div>
@@ -220,7 +248,7 @@ conducted outside of the training set.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
