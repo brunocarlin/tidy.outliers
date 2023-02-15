@@ -13,7 +13,9 @@ step_outliers_univariate(
   outlier_score = NULL,
   columns = NULL,
   name_mutate = ".outliers_univariate",
-  outlier_function = function(x) {     abs((percent_rank(x) - 0.5)) * 2 },
+  outlier_function = function(x) {
+     abs((percent_rank(x) - 0.5)) * 2
+ },
   combination_function = mean,
   skip = TRUE,
   id = rand_id("outliers_univariate")

@@ -76,8 +76,8 @@ rec_obj <-
 
 ## Return scores
 
-```{r juice}
-juice(rec_obj) |> 
+```{r bake_null}
+bake(rec_obj,new_data = NULL) |> 
   select(contains(r"(.outliers)")) |> 
   arrange(.outliers_lookout |> desc())
 ```
@@ -99,8 +99,8 @@ rec_obj2 <-
 
 We filtered one row from the dataset and and automatically removed the extra outlier columns.
 
-```{r juice remove}
-juice(rec_obj2) |> glimpse()
+```{r bake_null remove}
+bake(rec_obj2,new_data = NULL) |> glimpse()
 ```
 
 ```{r}

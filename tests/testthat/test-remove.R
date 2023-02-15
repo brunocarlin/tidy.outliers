@@ -63,7 +63,7 @@ rec_obj_tune <-
   step_outliers_remove(contains(r"(.outliers)"), score_dropout = tune("dropout"))
 
 
-rec_param <- tunable(rec_obj_tune)
+rec_param <- tune::tunable(rec_obj_tune)
 
 
 test_that("tune wrorks", {
@@ -94,11 +94,11 @@ rec_obj_tune <-
   )
 
 
-tune_grid <- parameters(rec_obj_tune) |>
-  update(
-    dropout = dials::dropout(range = c(0.75, 1)),
-    aggregation = aggregation()
-  )
+  tune_grid <- rec_obj_tune |>
+    extract_parameter_set_dials(
+      dropout = dials::dropout(range = c(0.75, 1)),
+      aggregation = aggregation()
+    )
 
 spline_grid <- grid_max_entropy(tune_grid, size = 10)
 
@@ -117,3 +117,4 @@ best_five <- tune_grid_result |> tune::show_best(metric = "rmse")
 test_that("grid search works", {
   expect_gt(max(best_five$mean), min(best_five$mean))
 })
+

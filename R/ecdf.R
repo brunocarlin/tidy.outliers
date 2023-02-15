@@ -108,8 +108,8 @@ get_train_score_ecdf <- function(x,outcome) {
   res <- x |>
     dplyr::group_by(dplyr::across(!outcome)) |>
     dplyr::mutate(
-      dplyr::across(outcome,.fns = \(x) ecdf(x)(x))
-      ) |>
+      outcome = ecdf(!!rlang::sym(outcome))(!!rlang::sym(outcome))
+    )|>
     dplyr::ungroup() |>
     dplyr::select(outcome) |>
     dplyr::pull()
